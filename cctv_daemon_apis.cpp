@@ -129,8 +129,6 @@ void becomeDaemon()
         exit(EXIT_SUCCESS);
     }
 
-    cerr << "I'm still here" << endl;
-
     // By default a child process inherits it's parent session ID and process group ID.
     // The daemon process inherited it's parent session ID and process group ID from the shell.
     // The daemon process is bound to the shell theough the session ID and process group ID.
