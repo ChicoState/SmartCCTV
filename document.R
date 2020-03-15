@@ -38,8 +38,10 @@ getInput <- function(times, input) {
     return(data)
 }
 
-getDate <- function(fname) {
-    # getDate() will be finished upon completion of format for log file names
+# Return a randomly created hex colour based on a seed 'i'
+getColour <- function(i) {
+    set.seed(i)
+    return(paste0(sample(c(0:9, LETTERS[1:6]), 6, T), collapse = ''))
 }
 
 # Set the arguement to trailing only and perform 
@@ -58,32 +60,45 @@ for (i in 1:length(args)) {
 # Start PDF/Plot generation
 pdf("activity-plot.pdf")
 
-# Set the base DF (only 2 by default) and the labels for mean values of DF
+# Set the base DF (only 2 by default) and the associated labels 
 df <- data.frame(
     "{DATE 1}"=sample(times[[1]], length(times[[1]]), replace = FALSE), 
     "{DATE 2}"=sample(times[[2]], length(times[[2]]), replace = FALSE)
 )
-df_lab <- df %>% pivot_longer(everything(), names_to = "var",values_to = "val") %>% group_by(var) %>% summarise(Mean = mean(val), Density = max(density(val)$y))
+df_lab <- summarise(
+    group_by(pivot_longer(df, everything(), names_to = "var",values_to = "val"), var), 
+    Mean = mean(val), 
+    Density = max(density(val)$y)
+)
 
 # Create the graph by passing in the DF and adding to the information sequentially
-df %>% pivot_longer(everything(), names_to = "var", values_to = "val") %>%
-ggplot(aes(x = val, fill = var, colour = var)) +
+ggplot(pivot_longer(df, everything(), names_to = "var", values_to = "val"), aes(x = val, fill = var, colour = var)) +
     # Base graph info
     geom_density(alpha = 0.8) +
     theme(legend.position="top") +
     
-    # Data set colourings (WILL THROW ERROR AT INCORRECT # OF ARGS)
-    scale_color_manual(values = c("#4271AE", "#FF7F00")) +
-    scale_fill_manual(values = c("#1A3552", "#D3D3D3")) +
+    # Set random plot colours
+    scale_color_manual(values = c(
+            sprintf("#%s", getColour(sample(1:10000, 1))), 
+            sprintf("#%s", getColour(sample(1:10000, 1))))
+    ) +
+    scale_fill_manual(values = c(
+            sprintf("#%s", getColour(sample(1:10000, 1))), 
+            sprintf("#%s", getColour(sample(1:10000, 1))))
+    ) +
     
-    # Mean grouping vertical lines (ALL DATA SETS)
+    # Draw mean vertical lines
     geom_vline(data = df_lab, aes(xintercept = Mean, color = var), linetype = "dashed", size = 1, show.legend = FALSE) +
     geom_text(inherit.aes = FALSE, data = df_lab, aes(x = Mean-0.5, y = Density/2, label = var, color = var), angle = 90, show.legend = TRUE) +
     
     # X-Y axis & Labels
     scale_x_continuous(name = "Time of Day", breaks=seq(c(0:23))) + 
     scale_y_continuous(name = "Activity") +
-    labs(title="Activity in the past {(ncol(df)) * 24} hours", subtitle="From {df[1]} to {df[ncol(df)]}", caption="{LOCATION}")
+    labs(
+        title=sprintf("Activity in the last %i hours", (ncol(df)) * 24), 
+        subtitle=sprintf("From {FIRST FILE} to {LAST FILE}"), 
+        caption="{LOCATION}"
+    )
 
 # End PDF/Plot generation
 dev.off()
