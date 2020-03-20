@@ -22,17 +22,14 @@ getInput <- function(times, input) {
         # Split string into a vector
         cList <- strsplit(cLine, " ")
         
-        # Check for event type
-        if (cList[[1]][9] == "ACTIVITY") {
-            # Insert converted data into our vector and increment the counter
-            cTime <- strsplit(cList[[1]][5], ":") 
-            data[count] <- (
-                (as.numeric(cTime[[1]][1])) + 
-                (as.numeric(cTime[[1]][2]) * 1/60) + 
-                (as.numeric(cTime[[1]][3]) * 1/3600)
-            )
-            count <- count + 1
-        }
+        # Insert converted data into our vector and increment the counter
+        cTime <- strsplit(cList[[1]][3], ":") 
+        data[count] <- (
+            (as.numeric(cTime[[1]][1])) + 
+            (as.numeric(cTime[[1]][2]) * 1/60) + 
+            (as.numeric(cTime[[1]][3]) * 1/3600)
+        )
+        count <- count + 1
     }
     close(src)
     return(data)
