@@ -19,13 +19,12 @@
  * It is done like this because signal handler functions maybe called, which do not accept
  * custom parameters.
  */
-Daemon_data daemon_data = {
+volatile Daemon_data daemon_data = {
     .program_name = "",
     .pid_file_name = "/tmp/SmartCCTV_daemon_pid",
     .pid_file_descriptor = 0,
     .pid_file_pointer = nullptr,
     .camera_daemon_pid = 0,
-    .listener_daemon_pid = 0
 };
 
 
@@ -65,13 +64,13 @@ bool checkPidFile(bool turn_on)
     // or is the PID file bad.
     // If the daemon is already running, then set the state to ON.
     if ( (daemon_data.pid_file_pointer = fopen(daemon_data.pid_file_name, "r")) != nullptr) {
-        clog << "Error: a PID file already exists." << endl;
+        clog << "A PID file already exists." << endl;
 	clog << "Checking if the SmartCCTV Daemon is running." << endl;
 
 	char digit = '\0';
 	// Check if the PID file contains a valid process ID of the daemon process.
 	// Check if all the characters in the PID file are digits.
-	// Check if the PID file is not tampered with.
+	// Check if the PID file was not tampered.
 	while (true) {
 	    digit = fgetc(daemon_data.pid_file_pointer);
 	    if (digit == EOF)
@@ -129,8 +128,6 @@ void becomeDaemon()
         exit(EXIT_SUCCESS);
     }
 
-    cerr << "I'm still here" << endl;
-
     // By default a child process inherits it's parent session ID and process group ID.
     // The daemon process inherited it's parent session ID and process group ID from the shell.
     // The daemon process is bound to the shell theough the session ID and process group ID.
@@ -149,8 +146,11 @@ void becomeDaemon()
     // sysconf(_SC_OPEN_MAX) is the number of all possible file descriptors
     // This closes all possible open file descriptors.
     long max_open_file_descriptors = sysconf(_SC_OPEN_MAX);
-    for (long i = 0; i < max_open_file_descriptors; ++i)
-        close(i);
+    for (long i = 0; i < max_open_file_descriptors; ++i) {
+	if (i != daemon_data.pid_file_descriptor) {
+            close(i);
+	}
+    }
 
     // Then we have to reopen stdin, stdout, and stderr because these three file descriptors
     // have to be open by the POSIX standard.
@@ -181,116 +181,52 @@ void becomeDaemon()
 
     // Write the PID of the daemon process to the PID file.
     daemon_data.camera_daemon_pid = getpid();
-    fprintf(daemon_data.pid_file_pointer, "hey");
-    //fprintf(daemon_data.pid_file_pointer, "%d", daemon_data.camera_daemon_pid);
+    fprintf(daemon_data.pid_file_pointer, "%d", daemon_data.camera_daemon_pid);
     fclose(daemon_data.pid_file_pointer);
     close(daemon_data.pid_file_descriptor);
 
     // Because the daemon is a background process without access to the terminal,
     // the only way it can communicate with the outside world is through the logger.
     // Using the syslog is de facto way of implementing logging in Linux/Unix.
+    openlog("camera", LOG_PID, LOG_LOCAL0);
+    atexit(closelog);
 
-    // Do another fork to split the single daemon process into two processes.
-    // The parent process is the camera daemon, responsible for getting images from the camera.
-    // The child process is the listener daemon, responsible for processing the images,
-    // detecting motion and/or humanoids, and writing the new images into the directory.
-    if ((daemon_data.listener_daemon_pid = fork()) == 0) {  // child process
-        openlog("listener", LOG_PID, LOG_DAEMON);
-	atexit(closelog);
+    // This sets up the signal handler for when the process is terminated.
+    struct sigaction action1;
+    action1.sa_handler = terminate_daemon;
+    sigemptyset(&action1.sa_mask);
+    sigaddset(&action1.sa_mask, SIGINT);
+    sigaddset(&action1.sa_mask, SIGQUIT);
+    sigaddset(&action1.sa_mask, SIGTERM);
+    sigaddset(&action1.sa_mask, SIGTSTP);
+    sigaddset(&action1.sa_mask, SIGHUP);
+    sigaddset(&action1.sa_mask, SIGUSR1);
+    sigaddset(&action1.sa_mask, SIGUSR2);
+    sigaddset(&action1.sa_mask, SIGCONT);
+    sigaddset(&action1.sa_mask, SIGCHLD);
+    action1.sa_flags = 0;
+    sigaction(SIGINT, &action1, nullptr);
+    sigaction(SIGTERM, &action1, nullptr);
+    sigaction(SIGQUIT, &action1, nullptr);
 
-        listener_daemon();
-    } else {  // parent process
-        openlog("camera", LOG_PID, LOG_DAEMON);
-	atexit(closelog);
-
-	// This sets up the signal handler for when the process is terminated.
-	struct sigaction action1;
-	action1.sa_handler = terminate_daemon;
-	sigemptyset(&action1.sa_mask);
-	sigaddset(&action1.sa_mask, SIGINT);
-	sigaddset(&action1.sa_mask, SIGQUIT);
-	sigaddset(&action1.sa_mask, SIGTERM);
-	sigaddset(&action1.sa_mask, SIGTSTP);
-	sigaddset(&action1.sa_mask, SIGHUP);
-	sigaddset(&action1.sa_mask, SIGUSR1);
-	sigaddset(&action1.sa_mask, SIGUSR2);
-	sigaddset(&action1.sa_mask, SIGCONT);
-	sigaddset(&action1.sa_mask, SIGCHLD);
-	action1.sa_flags = 0;
-	sigaction(SIGINT, &action1, nullptr);
-	sigaction(SIGTERM, &action1, nullptr);
-	sigaction(SIGQUIT, &action1, nullptr);
-
-	// This sets up the signal handler for when the listener daemon terminates.
-	struct sigaction action2;
-	action2.sa_handler = reap_child;
-	sigemptyset(&action2.sa_mask);
-	sigaddset(&action2.sa_mask, SIGINT);
-	sigaddset(&action2.sa_mask, SIGQUIT);
-	sigaddset(&action2.sa_mask, SIGTERM);
-	sigaddset(&action2.sa_mask, SIGTSTP);
-	sigaddset(&action2.sa_mask, SIGHUP);
-	sigaddset(&action2.sa_mask, SIGUSR1);
-	sigaddset(&action2.sa_mask, SIGUSR2);
-	sigaddset(&action2.sa_mask, SIGCONT);
-	sigaddset(&action2.sa_mask, SIGCHLD);
-	action2.sa_flags = 0;
-	sigaction(SIGCHLD, &action2, nullptr);
-
-        camera_daemon();
-    }
+    camera_daemon();
 }
 
 
 void terminate_daemon(int)
 {
-    // If the camera daemon was terminated, then it needs to make sure that the listener daemon also gets terminated.
-    // So send a signal to the listener daemon prior to exiting.
-    kill(daemon_data.listener_daemon_pid, SIGTERM);
-
-    if (fclose(daemon_data.pid_file_pointer) != 0) {
-        syslog(LOG_LOCAL0 | LOG_ERR, "Error: could not close the PID file.");
-    }
-
     if (close(daemon_data.pid_file_descriptor) == -1) {
         syslog(LOG_LOCAL0 | LOG_ERR, "Error: could not close the PID file.");
     }
 
     if (unlink(daemon_data.pid_file_name) == -1) {
         syslog(LOG_LOCAL0 | LOG_ERR, "Error: could not remove the PID file.");
+    } else {
+        syslog(LOG_LOCAL0 | LOG_NOTICE, "Removing the PID file.");
     }
 
-    syslog(LOG_LOCAL0 | LOG_NOTICE, "The camera demon is turning off.");
+    syslog(LOG_LOCAL0 | LOG_NOTICE, "The camera daemon is turning off.");
 
     exit(EXIT_SUCCESS);
-}
-
-
-void reap_child(int)
-{
-    int exit_status = EXIT_SUCCESS;
-    wait(&exit_status);
-
-    if (fclose(daemon_data.pid_file_pointer) != 0) {
-        syslog(LOG_LOCAL0 | LOG_ERR, "Error: could not close the PID file.");
-    }
-
-    if (close(daemon_data.pid_file_descriptor) == -1) {
-        syslog(LOG_LOCAL0 | LOG_ERR, "Error: could not close the PID file.");
-    }
-
-    if (unlink(daemon_data.pid_file_name) == -1) {
-        syslog(LOG_LOCAL0 | LOG_ERR, "Error: could not remove the PID file.");
-    }
-
-    syslog(LOG_LOCAL0 | LOG_NOTICE, "The camera demon is turning off.");
-
-    if (WIFEXITED(exit_status)) {
-        exit(WEXITSTATUS(exit_status));
-    } else if (WIFSIGNALED(exit_status)) {
-        exit(EXIT_SUCCESS);
-    } else {
-        exit(EXIT_SUCCESS);
-    }
 }
 

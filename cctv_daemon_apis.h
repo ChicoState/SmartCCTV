@@ -3,8 +3,8 @@
  * Created By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
  * Created On:  2/27/20
  *
- * Modified By: < >
- * Modified On:
+ * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
+ * Modified On:  3/21/20
  *
  * Description:
  * This file contains declarations of functions of the SmartCCTV Daemon's internal API.
@@ -50,7 +50,6 @@ struct Daemon_data {
     int pid_file_descriptor;
     FILE* pid_file_pointer;
     int camera_daemon_pid;
-    int listener_daemon_pid;
 };
 
 
@@ -95,7 +94,7 @@ bool checkPidFile(bool turn_on);
 
 
 /**
- * This function turns the calling process into the camera daemon, and it forks the listener daemon off of it.
+ * This function turns the calling process into the camera daemon.
  *
  * Becoming a daemon requires the following steps:
  * - forking itself once and killing the parent process to sever the connection between itself and the shell.
@@ -106,6 +105,7 @@ bool checkPidFile(bool turn_on);
  * - reset the environmental variables to a known value.
  * - write the PID of the daemon process into the PID file.
  * - setup the logging for communication with the outside world.
+ * - setup the signal handler for when the process is terminated.
  * - call camera_daemon() function inside of which the daemon will be in it's entire lifetime.
  */
 void becomeDaemon();
@@ -117,22 +117,11 @@ void becomeDaemon();
  * - SIGTERM
  * - SIGQUIT
  *
- * This function terminates the listener daemon.
- * It closes and removes the PID file.
+ * This function closes and removes the PID file.
  * Then it terminates the camera daemon.
  */
 void terminate_daemon(int);
 
-
-/**
- * This is a signal handler that gets activated whenever the camera daemon recieves SIGCHLD.
- * So the SIGCHLD signal gets send whenever the listener process exits.
- *
- * This function promptly reaps the zombie child.
- * It closes and removes the PID file.
- * Then it terminates the camera daemon with the exit status of the listener process.
- */
-void reap_child(int);
 
 #endif  /* CCTV_DAEMON_APIS_H */
 
