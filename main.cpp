@@ -1,6 +1,7 @@
 #include "camera_daemon.h"
 #include "cctv_daemon_apis.h"
-#include <sys/stat.h>   /* for mode permissions constants */
+#include <sys/types.h>
+#include <sys/stat.h>   /* for umask(), mode permissions constants */
 #include <fcntl.h>      /* for O_* constants, open() */
 #include <signal.h>     /* for kill() */
 #include <unistd.h>     /* for fork() */
@@ -65,6 +66,7 @@ int main(int argc, char* argv[])
 
 	    if (!checkPidFile(true)) {
 	        cerr << "Error: A SmartCCTV Daemon is already running with PID " << daemon_data.camera_daemon_pid << endl;
+		// Close the PID file, since it was opened in checkPidFile() function.
                 if (fclose(daemon_data.pid_file_pointer) == EOF) {
                     cerr << "Error: Could not close PID file ";
                     perror(daemon_data.pid_file_name);
@@ -72,6 +74,8 @@ int main(int argc, char* argv[])
 	        exit(EXIT_FAILURE);
 	    }
 
+	    // Reset the umask so that you have no problems creating the file with the desired permissions.
+	    umask(0);
 	    // The process ID file is like a lock file. It must be created before the daemon starts up.
 	    // Create the process ID file and obtain a handle to it.
 	    // Do that before you become a daemon, becuase if the file was failed to create,
@@ -105,16 +109,20 @@ int main(int argc, char* argv[])
 
 	    if (!checkPidFile(false)) {
 	        cerr << "Error: A SmartCCTV Daemon not already running." << endl;
+	        exit(EXIT_FAILURE);
+	    } else {
+		// Close the PID file, since it was opened in checkPidFile() function.
                 if (fclose(daemon_data.pid_file_pointer) == EOF) {
                     cerr << "Error: Could not close PID file ";
                     perror(daemon_data.pid_file_name);
 	        }
-	        exit(EXIT_FAILURE);
 	    }
 
-	    kill(daemon_data.camera_daemon_pid, SIGINT);
-
 	    cout << "Killing SmartCCTV Daemon" << endl;
+	    cout << "Removing PID file" << endl;
+	    kill(daemon_data.camera_daemon_pid, SIGINT);
+	    // The daemon will remove the PID file by itself.
+
 	    break;
 	case '?':  // The user specified an invalid option.
 	case -1:   // There are no options.

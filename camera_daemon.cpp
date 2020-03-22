@@ -3,14 +3,14 @@
  * Created By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
  * Created On:  3/03/20
  *
- * Modified By: < >
- * Modified On:
+ * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
+ * Modified On:  3/21/20
  *
  * Description:
- * This function contains the definitions of the deamon functions,
- * the functions that will acutally get executed when the deamon runs.
- * These functions should contain the main functionality of the daemon.
- * Put any code you want the daemon to execute in these functions.
+ * This function contains the definition of the camera_deamon() function,
+ * the function that will acutally get executed when the deamon runs.
+ * This function should contain the main functionality of the daemon.
+ * Put any code you want the daemon to execute in thise function.
  */
 
 #include "camera_daemon.h"
@@ -22,14 +22,14 @@ void camera_daemon()
 {
     syslog(LOG_LOCAL0 | LOG_NOTICE, "The camera daemon is starting up.");
 
-    // Put code for the camera daemon here.
-    sleep(1800);
-}
+    /*
+     * TODO: Replace this code below with the actual code for the camera daemon,
+     * what you want the camera daemon to do.
+     */
 
-
-void listener_daemon()
-{
-    syslog(LOG_LOCAL0 | LOG_NOTICE, "The listener daemon is starting up.");
-    sleep(1800);
+    while (true) {
+        sleep(5);
+        syslog(LOG_LOCAL0 | LOG_NOTICE, "Motion was detected.");
+    }
 }
 
