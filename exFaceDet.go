@@ -4,7 +4,7 @@
   Created On:  3/23/20
 
   Description: Example Golang code of a GoCV implementation of their OpenCV interface that I've modified to be a little bit more relevant
-               to our needs. Uploaded at behest of team, this server as a simple example of Golang's approach to similar problem with the
+               to our needs. Uploaded at behest of team, this serves as a simple example of Golang's approach to similar problem with the
                OpenCV interface available. NOTE: Uses a Haar cascade file (.xml) to classify front-facing human faces. 
 
   Usage: "go run exFaceDet.go deviceID classifierFile blurOption" 
@@ -22,6 +22,7 @@ import (
     "gocv.io/x/gocv"
 )
 
+/* Example function I wrote for taking simple pictures, very similar to CPP implementation of OCV */
 func takePic(fName, devID string) error {
     // Open device 'devID'
     cam, err := gocv.OpenVideoCapture(devID)
