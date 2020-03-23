@@ -27,7 +27,7 @@ getInput <- function(times, input) {
         cList <- strsplit(cLine, " ")
         
         # Check for event type (See example line(s) provided for sample)
-        if (str_detect(cLine, "camera\\[[0-9]{1,}\\]:\ [:print:]{0,}Motion")) {
+        #if (str_detect(cLine, "camera\\[[0-9]{1,}\\]:\ [:print:]{0,}Motion")) {
             # Insert converted data into our vector and increment the counter
             cTime <- strsplit(cList[[1]][5], ":") 
             data[count] <- (
@@ -36,15 +36,10 @@ getInput <- function(times, input) {
                 (as.numeric(cTime[[1]][3]) * 1/3600)
             )
             count <- count + 1
-        }
+        #}
     }
     close(src)
     return(data)
-}
-
-getColour <- function(i) {
-    set.seed(i)
-    return(paste0(sample(c(0:9, LETTERS[1:6]), 6, T), collapse = ''))
 }
 
 # Set the arguement to trailing only and perform 
@@ -69,27 +64,20 @@ df <- data.frame(
     "{DATE 2}"=sample(times[[2]], length(times[[2]]), replace = FALSE)
 )
 df_lab <- summarise(
-    group_by(pivot_longer(df, everything(), names_to = "var",values_to = "val"), var), 
-    Mean = mean(val), 
+    group_by(pivot_longer(df, everything(), names_to = "var",values_to = "val"), var),
+    Mean = mean(val),
     Density = max(density(val)$y)
 )
 
-# Create the graph by passing in the DF and adding to the information sequentially
+# Create the graph
 ggplot(pivot_longer(df, everything(), names_to = "var", values_to = "val"), aes(x = val, fill = var, colour = var)) +
-    # Base graph info
+    # Base graph info and theme
     geom_density(alpha = 0.8) +
     theme(legend.position="top") +
-    
-    # Plot colours
-    scale_color_manual(values = c(
-            sprintf("#%s", getColour(sample(1:10000, 1))), 
-            sprintf("#%s", getColour(sample(1:10000, 1))))
-    ) +
-    scale_fill_manual(values = c(
-            sprintf("#%s", getColour(sample(1:10000, 1))), 
-            sprintf("#%s", getColour(sample(1:10000, 1))))
-    ) +
-    
+    theme_minimal() + 
+    scale_fill_brewer(palette="Pastel1") +
+    scale_color_brewer(palette="Greys") +
+
     # Mean grouping vertical lines
     geom_vline(data = df_lab, aes(xintercept = Mean, color = var), linetype = "dashed", size = 1, show.legend = FALSE) +
     geom_text(inherit.aes = FALSE, data = df_lab, aes(x = Mean-0.5, y = Density/2, label = var, color = var), angle = 90, show.legend = TRUE) +
@@ -99,7 +87,7 @@ ggplot(pivot_longer(df, everything(), names_to = "var", values_to = "val"), aes(
     scale_y_continuous(name = "Activity") +
     labs(
         title=sprintf("Activity in the last %i hours", (ncol(df)) * 24), 
-        subtitle=sprintf("From %s to %s", argv[1], argv[2]), 
+        subtitle=sprintf("From %s to %s", args[1], args[2]), 
         caption="{LOCATION OF CAMERA}"
     )
 
