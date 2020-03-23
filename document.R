@@ -1,14 +1,18 @@
-#################################################################################################
-# The purpose of this is to compare 'N' amount of 24-hour periods, which is extracted from the  #
-# logfiles designated in command line call as arguements. The format will allow for 'N'         #
-# amount of data sets. However, it should be noted that 'N' shall not exceed ~5, given that any #
-# more than that would simply convolute the graph further, making it unreadable.                #
-#################################################################################################
+ # File Name:  document.R
+ # Created By:  Connor Adams
+ # Created On:  2/03/20
+ #
+ # Description:
+ # The purpose of this is to compare 'N' amount of 24-hour periods, which is extracted from the
+ # logfiles designated in command line call as arguements. The format will allow for 'N'
+ # amount of data sets. However, it should be noted that 'N' shall not exceed ~5, given that any
+ # more than that would simply convolute the graph further, making it unreadable.
 
 # Import libraries
 library(ggplot2)
 library(tidyr)
 library(dplyr)
+library(stringr)
 
 # Define data collection function
 getInput <- function(times, input) {
@@ -22,20 +26,22 @@ getInput <- function(times, input) {
         # Split string into a vector
         cList <- strsplit(cLine, " ")
         
-        # Insert converted data into our vector and increment the counter
-        cTime <- strsplit(cList[[1]][3], ":") 
-        data[count] <- (
-            (as.numeric(cTime[[1]][1])) + 
-            (as.numeric(cTime[[1]][2]) * 1/60) + 
-            (as.numeric(cTime[[1]][3]) * 1/3600)
-        )
-        count <- count + 1
+        # Check for event type (See example line(s) provided for sample)
+        if (str_detect(cLine, "camera\\[[0-9]{1,}\\]:\ [:print:]{0,}Motion")) {
+            # Insert converted data into our vector and increment the counter
+            cTime <- strsplit(cList[[1]][5], ":") 
+            data[count] <- (
+                (as.numeric(cTime[[1]][1])) + 
+                (as.numeric(cTime[[1]][2]) * 1/60) + 
+                (as.numeric(cTime[[1]][3]) * 1/3600)
+            )
+            count <- count + 1
+        }
     }
     close(src)
     return(data)
 }
 
-# Return a randomly created hex colour based on a seed 'i'
 getColour <- function(i) {
     set.seed(i)
     return(paste0(sample(c(0:9, LETTERS[1:6]), 6, T), collapse = ''))
@@ -74,7 +80,7 @@ ggplot(pivot_longer(df, everything(), names_to = "var", values_to = "val"), aes(
     geom_density(alpha = 0.8) +
     theme(legend.position="top") +
     
-    # Set random plot colours
+    # Plot colours
     scale_color_manual(values = c(
             sprintf("#%s", getColour(sample(1:10000, 1))), 
             sprintf("#%s", getColour(sample(1:10000, 1))))
@@ -84,7 +90,7 @@ ggplot(pivot_longer(df, everything(), names_to = "var", values_to = "val"), aes(
             sprintf("#%s", getColour(sample(1:10000, 1))))
     ) +
     
-    # Draw mean vertical lines
+    # Mean grouping vertical lines
     geom_vline(data = df_lab, aes(xintercept = Mean, color = var), linetype = "dashed", size = 1, show.legend = FALSE) +
     geom_text(inherit.aes = FALSE, data = df_lab, aes(x = Mean-0.5, y = Density/2, label = var, color = var), angle = 90, show.legend = TRUE) +
     
@@ -93,8 +99,8 @@ ggplot(pivot_longer(df, everything(), names_to = "var", values_to = "val"), aes(
     scale_y_continuous(name = "Activity") +
     labs(
         title=sprintf("Activity in the last %i hours", (ncol(df)) * 24), 
-        subtitle=sprintf("From {FIRST FILE} to {LAST FILE}"), 
-        caption="{LOCATION}"
+        subtitle=sprintf("From %s to %s", argv[1], argv[2]), 
+        caption="{LOCATION OF CAMERA}"
     )
 
 # End PDF/Plot generation
