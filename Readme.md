@@ -6,6 +6,7 @@
 
 **Dependencies Needed**
   - Deamon
+    - The daemon code itself has no dependencies since it's using low level Unix OS API.
   - OpenCV
   - GUI
   - R
