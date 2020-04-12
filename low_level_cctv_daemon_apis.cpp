@@ -1,18 +1,36 @@
 /**
- * File Name:  cctv_daemon_apis.cpp
+ * File Name:   low_level_cctv_daemon_apis.cpp
  * Created By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
  * Created On:  2/27/20
  *
- * Modified By: < >
- * Modified On:
+ * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
+ * Modified On:  4/12/20
  *
  * Description:
  * This file contains definitions of functions of the SmartCCTV Daemon's internal API.
  * These functions are mainly concerned with setting up the daemon.
  */
 
-#include "cctv_daemon_apis.h"
+#include "low_level_cctv_daemon_apis.h"
 #include "camera_daemon.h"
+
+#include <sys/types.h>
+#include <sys/stat.h>   /* for umask(), mode permissions constants */
+#include <fcntl.h>      /* for O_* constants, open() */
+#include <signal.h>     /* for kill() */
+#include <unistd.h>     /* for close(), unlink(), fork(), setsid(), sysconf(), chdir(), getpid() */
+#include <errno.h>      /* for errno */
+#include <syslog.h>     /* for openlog(), syslog(), closelog() */
+#include <cstdlib>      /* for exit(), atexit(), EXIT_SUCCESS, EXIT_FAILURE */
+#include <cstdio>       /* for perror(), fopen(), fclose(), fseek(), fgetc(), fscanf(), fprintf() */
+#include <cctype>       /* for isdigit() */
+#include <iostream>     /* for cout, cerr, clog, endl */
+
+using std::cout;
+using std::cerr;
+using std::clog;
+using std::endl;
+
 
 /**
  * This struct contains all the data of the daemon that might need to be accessed globally.
@@ -20,7 +38,6 @@
  * custom parameters.
  */
 volatile Daemon_data daemon_data = {
-    .program_name = "",
     .pid_file_name = "/tmp/SmartCCTV_daemon_pid",
     .pid_file_descriptor = 0,
     .pid_file_pointer = nullptr,
@@ -28,19 +45,8 @@ volatile Daemon_data daemon_data = {
 };
 
 
-void print_usage(ostream& os, int EXIT_STATUS)
+void remove_pid_file(FILE* pid_file_pointer)
 {
-    os << "Usage:\n" << daemon_data.program_name << " options" << endl;
-    os << "valid options are:" << endl;
-    os << "  -h  --help   Display this usage information." << endl;
-    os << "  -s  --start  Start the SmartCCTV Daemon." << endl;
-    os << "  -x  --stop   Kill the SmartCCTV Daemon." << endl;
-    os.flush();
-    exit(EXIT_STATUS);
-}
-
-
-void remove_pid_file(FILE* pid_file_pointer) {
     if (fclose(pid_file_pointer) == EOF) {
 	cerr << "Error: Could not close PID file ";
         perror(daemon_data.pid_file_name);
