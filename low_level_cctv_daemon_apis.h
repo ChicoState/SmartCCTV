@@ -1,40 +1,19 @@
 /**
- * File Name:  cctv_daemon_apis.h
+ * File Name:   low_level_cctv_daemon_apis.h
  * Created By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
  * Created On:  2/27/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  3/21/20
+ * Modified On:  4/12/20
  *
  * Description:
  * This file contains declarations of functions of the SmartCCTV Daemon's internal API.
  * These functions are mainly concerned with setting up the daemon.
  */
-#ifndef CCTV_DAEMON_APIS_H
-#define CCTV_DAEMON_APIS_H
+#ifndef LOW_LEVEL_CCTV_DAEMON_APIS_H
+#define LOW_LEVEL_CCTV_DAEMON_APIS_H
 
-#include <sys/types.h>
-#include <sys/stat.h>   /* for umask(), mode permissions constants */
-#include <sys/wait.h>   /* for wait() */
-#include <fcntl.h>      /* for O_* constants, open() */
-#include <signal.h>     /* for kill() */
-#include <unistd.h>     /* for close(), unlink(), fork(), setsid(), sysconf(), chdir(), getpid() */
-#include <getopt.h>     /* for getopt_long() */
-#include <errno.h>      /* for errno */
-#include <syslog.h>     /* for openlog(), syslog(), closelog() */
-#include <cstdlib>      /* for exit(), atexit(), EXIT_SUCCESS, EXIT_FAILURE */
-#include <cstdio>       /* for perror(), fopen(), fclose(), fseek(), fgetc(), fscanf(), fprintf() */
-#include <cctype>       /* for isdigit() */
-#include <iostream>     /* for cout, cerr, clog, endl */
-#include <string>       /* for string */
-
-using std::cin;
-using std::cout;
-using std::cerr;
-using std::clog;
-using std::endl;
-using std::ostream;
-using std::string;
+#include <cstdio>       /* for FILE */
 
 
 /**
@@ -43,21 +22,12 @@ using std::string;
  * custom parameters.
  */
 struct Daemon_data {
-    /* The name of the program. */
-    const char* program_name;
     /* The path to the PID file. */
     const char* pid_file_name;
     int pid_file_descriptor;
     FILE* pid_file_pointer;
     int camera_daemon_pid;
 };
-
-
-/**
- * This function prints the usage information to ostream& os and then exits the program
- * with EXIT_STATUS.
- */
-void print_usage(ostream& os, int EXIT_STATUS);
 
 
 /**
@@ -123,5 +93,5 @@ void becomeDaemon();
 void terminate_daemon(int);
 
 
-#endif  /* CCTV_DAEMON_APIS_H */
+#endif  /* LOW_LEVEL_CCTV_DAEMON_APIS_H */
 
