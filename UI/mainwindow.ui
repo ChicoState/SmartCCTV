@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>523</width>
-    <height>313</height>
+    <width>605</width>
+    <height>374</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>511</width>
-      <height>261</height>
+      <width>591</width>
+      <height>331</height>
      </rect>
     </property>
     <property name="tabPosition">
@@ -39,10 +39,10 @@
      <widget class="QPushButton" name="pushButton_Run">
       <property name="geometry">
        <rect>
-        <x>40</x>
-        <y>50</y>
-        <width>161</width>
-        <height>51</height>
+        <x>70</x>
+        <y>70</y>
+        <width>151</width>
+        <height>101</height>
        </rect>
       </property>
       <property name="text">
@@ -52,10 +52,10 @@
      <widget class="QPushButton" name="pushButton_Kill">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>50</y>
-        <width>161</width>
-        <height>51</height>
+        <x>290</x>
+        <y>70</y>
+        <width>151</width>
+        <height>101</height>
        </rect>
       </property>
       <property name="text">
@@ -67,30 +67,69 @@
      <attribute name="title">
       <string>Statistics</string>
      </attribute>
-     <widget class="QPushButton" name="pushButton_Statistics">
+     <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>50</x>
+        <x>9</x>
         <y>70</y>
-        <width>161</width>
-        <height>31</height>
+        <width>551</width>
+        <height>211</height>
        </rect>
       </property>
       <property name="text">
-       <string>Day</string>
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>9</x>
+        <y>9</y>
+        <width>37</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Date:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>30</y>
+        <width>80</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Find</string>
       </property>
      </widget>
      <widget class="QDateEdit" name="dateEdit">
       <property name="geometry">
        <rect>
-        <x>50</x>
+        <x>10</x>
         <y>30</y>
-        <width>161</width>
+        <width>131</width>
         <height>26</height>
        </rect>
       </property>
       <property name="layoutDirection">
        <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="dateTime">
+       <datetime>
+        <hour>0</hour>
+        <minute>0</minute>
+        <second>0</second>
+        <year>2020</year>
+        <month>1</month>
+        <day>1</day>
+       </datetime>
       </property>
       <property name="displayFormat">
        <string>M/d/yyyy</string>
@@ -102,74 +141,6 @@
        <enum>Qt::LocalTime</enum>
       </property>
      </widget>
-     <widget class="QLabel" name="label_2">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>10</y>
-        <width>67</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Date:</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label">
-      <property name="geometry">
-       <rect>
-        <x>290</x>
-        <y>70</y>
-        <width>171</width>
-        <height>131</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_Statistics_2">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>150</y>
-        <width>161</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Month</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_Statistics_3">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>110</y>
-        <width>161</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Week</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_Statistics_4">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>190</y>
-        <width>161</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Year</string>
-      </property>
-     </widget>
     </widget>
    </widget>
   </widget>
@@ -178,7 +149,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>523</width>
+     <width>605</width>
      <height>22</height>
     </rect>
    </property>

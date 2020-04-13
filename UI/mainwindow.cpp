@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QPixmap>
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,8 +15,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
-void MainWindow::on_pushButton_Statistics_clicked()
+void MainWindow::on_pushButton_clicked()
 {
-    ui->label->setText("Chart goes here depending on selected option.");
+    QString imgPath = "/home/weitaoli/Desktop/SmartCCTV/Charts/" + ui->dateEdit->date().toString("ddMMyyyy") + ".png";
+    QPixmap img(imgPath);
+    ui->label->setPixmap(img.scaled(ui->label->width(),ui->label->height(),Qt::KeepAspectRatio));
 }
