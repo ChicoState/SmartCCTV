@@ -4,7 +4,7 @@
  * Created On:  4/11/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  4/12/20
+ * Modified On:  4/13/20
  *
  * Description:
  * This file contains definitions of functions of the SmartCCTV Daemon's external API.
@@ -31,9 +31,10 @@ using std::endl;
 
 extern Daemon_data daemon_data;
 
-bool run_daemon()
+int run_daemon()
 {
     // User has requested to start the SmartCCTV daemon.
+    enum return_states { SUCCESS, DAEMON_ALREADY_RUNNING, PERMISSIONS_ERROR };
 
     if (!checkPidFile(true)) {
         cerr << "Error: A SmartCCTV Daemon is already running with PID " << daemon_data.camera_daemon_pid << endl;
@@ -43,7 +44,7 @@ bool run_daemon()
             perror(daemon_data.pid_file_name);
         }
         //exit(EXIT_FAILURE);
-        return false;
+        return DAEMON_ALREADY_RUNNING;
     }
 
     // Reset the umask so that you have no problems creating the file with the desired permissions.
@@ -56,13 +57,13 @@ bool run_daemon()
         cerr << "Error: Not able to create the file ";
 	    perror(daemon_data.pid_file_name);
         //exit(EXIT_FAILURE);
-        return false;
+        return PERMISSIONS_ERROR;
     }
     if ( (daemon_data.pid_file_pointer = fdopen(daemon_data.pid_file_descriptor, "w")) == NULL) {
         cerr << "Error: Not able to open the file ";
 	    perror(daemon_data.pid_file_name);
         //exit(EXIT_FAILURE);
-        return false;
+        return PERMISSIONS_ERROR;
     }
     cout << "PID file created successfully" << endl;
 
@@ -76,7 +77,7 @@ bool run_daemon()
     }
 
     cout << "Starting SmartCCTV Daemon" << endl;
-    return true;
+    return SUCCESS;
 }
 
 

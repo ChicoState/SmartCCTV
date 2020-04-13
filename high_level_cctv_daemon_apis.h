@@ -4,7 +4,7 @@
  * Created On:  4/11/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  4/12/20
+ * Modified On:  4/13/20
  *
  * Description:
  * This file contains declarations of functions of the SmartCCTV Daemon's external API.
@@ -18,13 +18,12 @@
 /**
  * This function turns on the daemon if it is not already running.
  *
- * @return bool - true if it succeeded running the daemon
- *                false if it did not succeed
- *         There are two reasons why it could'nt have succeeded:
- *           - Either the daemon was already running OR
- *           - it failed to create and/or open the PID file.
+ * @return int - 0 if it succeeded running the daemon
+ *               1 if it failed because the daemon was already running
+ *               2 if it failed because you don't have permissions to run the daemon
+ *                              (it failed to create and/or open the PID file)
  */
-bool run_daemon();
+int run_daemon();
 
 
 /**
