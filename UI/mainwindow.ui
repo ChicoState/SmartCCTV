@@ -30,7 +30,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -52,7 +52,7 @@
      <widget class="QPushButton" name="pushButton_Kill">
       <property name="geometry">
        <rect>
-        <x>290</x>
+        <x>310</x>
         <y>70</y>
         <width>151</width>
         <height>101</height>
@@ -60,6 +60,19 @@
       </property>
       <property name="text">
        <string>Kill</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="daemon_label">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>190</y>
+        <width>301</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
       </property>
      </widget>
     </widget>

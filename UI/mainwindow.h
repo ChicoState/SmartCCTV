@@ -18,6 +18,10 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void on_pushButton_Run_clicked();
+
+    void on_pushButton_Kill_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
