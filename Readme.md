@@ -21,9 +21,10 @@ numpy eigen3-devel gstreamer-plugins-base-devel freeglut-devel mesa-libGL
 mesa-libGL-devel boost boost-thread boost-devel libv4l-devel
 ``` 
 
-GUI
+QT Creator (Version 4.11.1)
 ```
-- Dependencies
+Based on Qt 5.14.1 (GCC 5.3.1 20160406 (Red Hat 5.3.1-6), 64 bit)
+https://download.qt.io/official_releases/qt/5.14/5.14.1/
 ```
 
 R
