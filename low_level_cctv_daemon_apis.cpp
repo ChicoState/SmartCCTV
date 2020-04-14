@@ -228,7 +228,7 @@ void terminate_daemon(int)
     if (unlink(daemon_data.pid_file_name) == -1) {
         syslog(LOG_LOCAL0 | LOG_ERR, "Error: could not remove the PID file.");
     } else {
-        syslog(LOG_LOCAL0 | LOG_NOTICE, "Removing the PID file.");
+        syslog(LOG_LOCAL0 | LOG_NOTICE, "Removed the PID file successfully.");
     }
 
     syslog(LOG_LOCAL0 | LOG_NOTICE, "The camera daemon is turning off.");
