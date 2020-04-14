@@ -20,7 +20,7 @@
 
 void camera_daemon()
 {
-    syslog(LOG_LOCAL0 | LOG_NOTICE, "The camera daemon is starting up.");
+    syslog(LOG_LOCAL0 | LOG_NOTICE, "The camera daemon has started running.");
 
     /*
      * TODO: Replace this code below with the actual code for the camera daemon,
