@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.9.9
+** Created by: Qt User Interface Compiler version 4.8.7
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -10,18 +10,18 @@
 #define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
-#include <QtWidgets/QAction>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QDateEdit>
-#include <QtWidgets/QHeaderView>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTabWidget>
-#include <QtWidgets/QWidget>
+#include <QtGui/QAction>
+#include <QtGui/QApplication>
+#include <QtGui/QButtonGroup>
+#include <QtGui/QDateEdit>
+#include <QtGui/QHeaderView>
+#include <QtGui/QLabel>
+#include <QtGui/QMainWindow>
+#include <QtGui/QMenuBar>
+#include <QtGui/QPushButton>
+#include <QtGui/QStatusBar>
+#include <QtGui/QTabWidget>
+#include <QtGui/QWidget>
 
 QT_BEGIN_NAMESPACE
 
@@ -45,41 +45,41 @@ public:
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
-            MainWindow->setObjectName(QStringLiteral("MainWindow"));
+            MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
         MainWindow->resize(605, 374);
         centralwidget = new QWidget(MainWindow);
-        centralwidget->setObjectName(QStringLiteral("centralwidget"));
+        centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         tabWidget = new QTabWidget(centralwidget);
-        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
         tabWidget->setGeometry(QRect(0, 0, 591, 331));
         tabWidget->setTabPosition(QTabWidget::North);
         tabWidget->setTabShape(QTabWidget::Rounded);
         tab = new QWidget();
-        tab->setObjectName(QStringLiteral("tab"));
+        tab->setObjectName(QString::fromUtf8("tab"));
         pushButton_Run = new QPushButton(tab);
-        pushButton_Run->setObjectName(QStringLiteral("pushButton_Run"));
+        pushButton_Run->setObjectName(QString::fromUtf8("pushButton_Run"));
         pushButton_Run->setGeometry(QRect(70, 70, 151, 101));
         pushButton_Kill = new QPushButton(tab);
-        pushButton_Kill->setObjectName(QStringLiteral("pushButton_Kill"));
+        pushButton_Kill->setObjectName(QString::fromUtf8("pushButton_Kill"));
         pushButton_Kill->setGeometry(QRect(310, 70, 151, 101));
         daemon_label = new QLabel(tab);
-        daemon_label->setObjectName(QStringLiteral("daemon_label"));
+        daemon_label->setObjectName(QString::fromUtf8("daemon_label"));
         daemon_label->setGeometry(QRect(130, 190, 301, 41));
         tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
-        tab_2->setObjectName(QStringLiteral("tab_2"));
+        tab_2->setObjectName(QString::fromUtf8("tab_2"));
         label = new QLabel(tab_2);
-        label->setObjectName(QStringLiteral("label"));
+        label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(9, 70, 551, 211));
         label_2 = new QLabel(tab_2);
-        label_2->setObjectName(QStringLiteral("label_2"));
+        label_2->setObjectName(QString::fromUtf8("label_2"));
         label_2->setEnabled(true);
         label_2->setGeometry(QRect(9, 9, 37, 17));
         pushButton = new QPushButton(tab_2);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
+        pushButton->setObjectName(QString::fromUtf8("pushButton"));
         pushButton->setGeometry(QRect(150, 30, 80, 25));
         dateEdit = new QDateEdit(tab_2);
-        dateEdit->setObjectName(QStringLiteral("dateEdit"));
+        dateEdit->setObjectName(QString::fromUtf8("dateEdit"));
         dateEdit->setGeometry(QRect(10, 30, 131, 26));
         dateEdit->setLayoutDirection(Qt::LeftToRight);
         dateEdit->setDateTime(QDateTime(QDate(2020, 1, 1), QTime(0, 0, 0)));
@@ -88,11 +88,11 @@ public:
         tabWidget->addTab(tab_2, QString());
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
-        menubar->setObjectName(QStringLiteral("menubar"));
+        menubar->setObjectName(QString::fromUtf8("menubar"));
         menubar->setGeometry(QRect(0, 0, 605, 22));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
-        statusbar->setObjectName(QStringLiteral("statusbar"));
+        statusbar->setObjectName(QString::fromUtf8("statusbar"));
         MainWindow->setStatusBar(statusbar);
 
         retranslateUi(MainWindow);
@@ -105,16 +105,16 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", Q_NULLPTR));
-        pushButton_Run->setText(QApplication::translate("MainWindow", "Run", Q_NULLPTR));
-        pushButton_Kill->setText(QApplication::translate("MainWindow", "Kill", Q_NULLPTR));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0, QApplication::UnicodeUTF8));
+        pushButton_Run->setText(QApplication::translate("MainWindow", "Run", 0, QApplication::UnicodeUTF8));
+        pushButton_Kill->setText(QApplication::translate("MainWindow", "Kill", 0, QApplication::UnicodeUTF8));
         daemon_label->setText(QString());
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Home", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Home", 0, QApplication::UnicodeUTF8));
         label->setText(QString());
-        label_2->setText(QApplication::translate("MainWindow", "Date:", Q_NULLPTR));
-        pushButton->setText(QApplication::translate("MainWindow", "Find", Q_NULLPTR));
-        dateEdit->setDisplayFormat(QApplication::translate("MainWindow", "M/d/yyyy", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Statistics", Q_NULLPTR));
+        label_2->setText(QApplication::translate("MainWindow", "Date:", 0, QApplication::UnicodeUTF8));
+        pushButton->setText(QApplication::translate("MainWindow", "Find", 0, QApplication::UnicodeUTF8));
+        dateEdit->setDisplayFormat(QApplication::translate("MainWindow", "M/d/yyyy", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Statistics", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

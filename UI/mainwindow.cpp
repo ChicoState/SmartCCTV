@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "/home/weitaoli/Desktop/SmartCCTV/high_level_cctv_daemon_apis.h"
+#include "../high_level_cctv_daemon_apis.h"
 #include <QPixmap>
 using namespace std;
 
