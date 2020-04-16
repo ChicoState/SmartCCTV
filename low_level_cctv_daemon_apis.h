@@ -4,7 +4,7 @@
  * Created On:  2/27/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  4/12/20
+ * Modified On:  4/16/20
  *
  * Description:
  * This file contains declarations of functions of the SmartCCTV Daemon's internal API.
@@ -15,6 +15,9 @@
 
 #include <cstdio>       /* for FILE */
 
+// You can change this to make the syslog() output to a different file.
+#define log_facility LOG_LOCAL0
+
 
 /**
  * This struct contains all the data of the daemon that might need to be accessed globally.
@@ -22,17 +25,20 @@
  * custom parameters.
  */
 struct Daemon_data {
-    /* The path to the PID file. */
-    const char* pid_file_name;
-    int pid_file_descriptor;
-    FILE* pid_file_pointer;
-    int camera_daemon_pid;
+    const char* pid_file_name;   // The path to the PID file.
+    int pid_file_descriptor;     // A descriptor to this file.
+    FILE* pid_file_pointer;      // A pointer to this file.
+    int camera_daemon_pid;       // The PID of the daemon.
+    const char* home_directory;  // The path to the home directory, $HOME.
+    int daemon_exit_status;      // The exit status of the daemon, to use in terminate_daemon(), assumed EXIT_SUCCESS.
 };
 
 
 /**
  * This function deletes the PID file.
  * It first closes the passed in FILE* and then it unlinks the actual file.
+ *
+ * This function is called only in the GUI process.
  *
  * @param FILE* pid_file_pointer - A pointer to the PID file.
  */
@@ -46,6 +52,8 @@ void remove_pid_file(FILE* pid_file_pointer);
  *
  * If either the PID file does not exist, or it exists and it is valid,
  * a bool value is returned depeding on bool turn_on.
+ *
+ * This function is called only in the GUI process.
  *
  * @param bool turn_on - This is a command to turn the daemon on, or turn it off.
  *             turn_on == true if the daemon is being turned on.
@@ -65,6 +73,8 @@ bool checkPidFile(bool turn_on);
 
 /**
  * This function turns the calling process into the camera daemon.
+ *
+ * This function is called only in the daemon process.
  *
  * Becoming a daemon requires the following steps:
  * - forking itself once and killing the parent process to sever the connection between itself and the shell.
@@ -89,6 +99,8 @@ void becomeDaemon();
  *
  * This function closes and removes the PID file.
  * Then it terminates the camera daemon.
+ *
+ * This function is called only in the daemon process.
  */
 void terminate_daemon(int);
 
