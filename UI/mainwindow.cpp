@@ -66,3 +66,13 @@ void MainWindow::on_pushButton_Kill_clicked()
     }
 }
 
+void MainWindow::on_horizontalSlider_sliderMoved(int position)
+{
+    if (position > 1){
+        ui->day_label->setText("Days");
+    }
+    else{
+        ui->day_label->setText("Day");
+    }
+    ui->range_counter->setText(QString::number(position));
+}
