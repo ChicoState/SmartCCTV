@@ -4,7 +4,7 @@
  * Created On:  4/11/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  4/13/20
+ * Modified On:  4/16/20
  *
  * Description:
  * This file contains definitions of functions of the SmartCCTV Daemon's external API.
@@ -20,30 +20,31 @@
 #include <signal.h>     /* for kill() */
 #include <unistd.h>     /* for fork() */
 #include <errno.h>      /* for errno */
-#include <cstdio>       /* for perror(), fclose() */
-#include <iostream>     /* for cout, cerr, clog, endl */
-
-using std::cout;
-using std::cerr;
-using std::clog;
-using std::endl;
+#include <syslog.h>     /* for syslog() */
+#include <cstdio>       /* for fclose() */
 
 
 extern Daemon_data daemon_data;
 
+void set_daemon_info(const char* home_directory)
+{
+    daemon_data.home_directory = home_directory;
+}
+
+
 int run_daemon()
 {
     // User has requested to start the SmartCCTV daemon.
+
     enum return_states { SUCCESS, DAEMON_ALREADY_RUNNING, PERMISSIONS_ERROR };
 
     if (!checkPidFile(true)) {
-        cerr << "Error: A SmartCCTV Daemon is already running with PID " << daemon_data.camera_daemon_pid << endl;
+        syslog(log_facility | LOG_ERR, "Error: A SmartCCTV Daemon is already running with PID %d", daemon_data.camera_daemon_pid);
         // Close the PID file, since it was opened in checkPidFile() function.
         if (fclose(daemon_data.pid_file_pointer) == EOF) {
-            cerr << "Error: Could not close PID file ";
-            perror(daemon_data.pid_file_name);
+            syslog(log_facility | LOG_ERR, "Error: Could not close PID file %s : %m", daemon_data.pid_file_name);
         }
-        //exit(EXIT_FAILURE);
+
         return DAEMON_ALREADY_RUNNING;
     }
 
@@ -54,18 +55,16 @@ int run_daemon()
     // Do that before you become a daemon, becuase if the file was failed to create,
     // you can't write the PID of the daemon process into that file.
     if ( (daemon_data.pid_file_descriptor = open(daemon_data.pid_file_name, O_CREAT | O_EXCL | O_WRONLY, S_IRUSR | S_IWUSR)) == -1) {
-        cerr << "Error: Not able to create the file ";
-	    perror(daemon_data.pid_file_name);
-        //exit(EXIT_FAILURE);
+        syslog(log_facility | LOG_ERR, "Error: Not able to create the file %s : %m", daemon_data.pid_file_name);
+
         return PERMISSIONS_ERROR;
     }
     if ( (daemon_data.pid_file_pointer = fdopen(daemon_data.pid_file_descriptor, "w")) == NULL) {
-        cerr << "Error: Not able to open the file ";
-	    perror(daemon_data.pid_file_name);
-        //exit(EXIT_FAILURE);
+        syslog(log_facility | LOG_ERR, "Error: Not able to open the file %s : %m", daemon_data.pid_file_name);
+
         return PERMISSIONS_ERROR;
     }
-    cout << "PID file created successfully" << endl;
+    syslog(log_facility | LOG_NOTICE, "PID file created successfully");
 
     // At the point where you want to create a daemon, you're going to do a fork().
     // If you're the child, you're going to call this function from which you're never going to return.
@@ -76,7 +75,15 @@ int run_daemon()
         becomeDaemon();
     }
 
-    cout << "Starting SmartCCTV Daemon" << endl;
+    // After creating the PID file
+    // Close the PID file in the GUI process only.
+    // In the daemon process the PID file remains open.
+    if (close(daemon_data.pid_file_descriptor) == -1) {
+        syslog(log_facility | LOG_ERR, "Error: GUI process could not close PID file %s : %m", daemon_data.pid_file_name);
+    }
+    daemon_data.pid_file_pointer = nullptr;
+
+    syslog(log_facility | LOG_NOTICE, "Starting SmartCCTV Daemon");
     return SUCCESS;
 }
 
@@ -86,19 +93,18 @@ bool kill_daemon()
     // User has requested to stop the SmartCCTV daemon.
 
     if (!checkPidFile(false)) {
-        cerr << "Error: A SmartCCTV Daemon not already running." << endl;
-        //exit(EXIT_FAILURE);
+        syslog(log_facility | LOG_ERR, "Error: A SmartCCTV Daemon not already running.");
+
         return false;
     } else {
         // Close the PID file, since it was opened in checkPidFile() function.
         if (fclose(daemon_data.pid_file_pointer) == EOF) {
-            cerr << "Error: Could not close PID file ";
-            perror(daemon_data.pid_file_name);
+            syslog(log_facility | LOG_ERR, "Error: Could not close PID file %s : %m", daemon_data.pid_file_name);
         }
     }
 
-    cout << "Killing SmartCCTV Daemon" << endl;
-    cout << "Removing PID file" << endl;
+    syslog(log_facility | LOG_NOTICE, "Killing SmartCCTV Daemon");
+    syslog(log_facility | LOG_NOTICE, "Removing PID file");
     kill(daemon_data.camera_daemon_pid, SIGINT);
     // The daemon will remove the PID file by itself.
 
@@ -114,8 +120,7 @@ bool is_daemon_running()
 
         // Close the PID file, since it was opened in checkPidFile() function.
         if (fclose(daemon_data.pid_file_pointer) == EOF) {
-            cerr << "Error: Could not close PID file ";
-            perror(daemon_data.pid_file_name);
+            syslog(log_facility | LOG_ERR, "Error: Could not close PID file %s : %m", daemon_data.pid_file_name);
         }
 
         return true;

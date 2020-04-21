@@ -27,6 +27,10 @@ QT Creator (Version 4.11.1)
 ```
 Based on Qt 5.14.1 (GCC 5.3.1 20160406 (Red Hat 5.3.1-6), 64 bit)
 https://download.qt.io/official_releases/qt/5.14/5.14.1/
+
+You might need to install these packages before being able to run the app:
+sudo apt install qt5-qmake
+sudo apt install libqt4-dev
 ```
 
 R

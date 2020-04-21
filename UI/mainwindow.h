@@ -24,5 +24,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    const char* home_directory;
 };
+
 #endif // MAINWINDOW_H

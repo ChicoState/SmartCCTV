@@ -14,13 +14,16 @@
  */
 
 #include "camera_daemon.h"
+#include "low_level_cctv_daemon_apis.h"
 #include <syslog.h>  /* for syslog() */
 #include <unistd.h>  /* for sleep() */
 
 
+extern Daemon_data daemon_data;
+
 void camera_daemon()
 {
-    syslog(LOG_LOCAL0 | LOG_NOTICE, "The camera daemon is starting up.");
+    syslog(log_facility | LOG_NOTICE, "The camera daemon has started running.");
 
     /*
      * TODO: Replace this code below with the actual code for the camera daemon,
@@ -29,7 +32,7 @@ void camera_daemon()
 
     while (true) {
         sleep(5);
-        syslog(LOG_LOCAL0 | LOG_NOTICE, "Motion was detected.");
+        syslog(log_facility | LOG_NOTICE, "Motion was detected.");
     }
 }
 

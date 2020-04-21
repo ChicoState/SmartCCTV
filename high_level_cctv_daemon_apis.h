@@ -14,9 +14,24 @@
 #ifndef HIGH_LEVEL_CCTV_DAEMON_APIS_H
 #define HIGH_LEVEL_CCTV_DAEMON_APIS_H
 
+// You can change this to make the syslog() output to a different file.
+#define log_facility LOG_LOCAL0
+
+
+/**
+ * This function is used for passing some winformation from the MainWindow to the daemon.
+ *
+ * This function is called only in the GUI process.
+ *
+ * @param const char* home_directory - The MainWindow class gives the daemon information about the $HOME directory.
+ */
+void set_daemon_info(const char* home_directory);
+
 
 /**
  * This function turns on the daemon if it is not already running.
+ *
+ * This function is called only in the GUI process.
  *
  * @return int - 0 if it succeeded running the daemon
  *               1 if it failed because the daemon was already running
@@ -29,6 +44,8 @@ int run_daemon();
 /**
  * This function kills the daemon if it is already running.
  *
+ * This function is called only in the GUI process.
+ *
  * @return bool - true if it succeeded killing the daemon
  *                false if it did not succeed
  *         The only reason it did not succeed is because the deamon was not already running.
@@ -37,6 +54,8 @@ bool kill_daemon();
 
 
 /**
+ * This function is called only in the GUI process.
+ *
  * @return bool - true if the daemon is already running
  *                false if the daemon is not already running
  */

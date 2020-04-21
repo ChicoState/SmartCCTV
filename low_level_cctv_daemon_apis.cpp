@@ -4,7 +4,7 @@
  * Created On:  2/27/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  4/12/20
+ * Modified On:  4/16/20
  *
  * Description:
  * This file contains definitions of functions of the SmartCCTV Daemon's internal API.
@@ -18,43 +18,43 @@
 #include <sys/stat.h>   /* for umask(), mode permissions constants */
 #include <fcntl.h>      /* for O_* constants, open() */
 #include <signal.h>     /* for kill() */
-#include <unistd.h>     /* for close(), unlink(), fork(), setsid(), sysconf(), chdir(), getpid() */
+#include <unistd.h>     /* for close(), unlink(), fork(), setsid(), sysconf(), chdir(), getpid(), sleep() */
 #include <errno.h>      /* for errno */
 #include <syslog.h>     /* for openlog(), syslog(), closelog() */
 #include <cstdlib>      /* for exit(), atexit(), EXIT_SUCCESS, EXIT_FAILURE */
-#include <cstdio>       /* for perror(), fopen(), fclose(), fseek(), fgetc(), fscanf(), fprintf() */
+#include <cstdio>       /* for fopen(), fclose(), fseek(), fgetc(), fscanf(), fprintf() */
+#include <cstring>      /* for strerror() */
 #include <cctype>       /* for isdigit() */
-#include <iostream>     /* for cout, cerr, clog, endl */
 
-using std::cout;
-using std::cerr;
-using std::clog;
-using std::endl;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
 
 
 /**
  * This struct contains all the data of the daemon that might need to be accessed globally.
  * It is done like this because signal handler functions maybe called, which do not accept
  * custom parameters.
+ * The Daemon_data is volatile because it is a global object that can be changed by multiple processes,
+ * both the GUI process and the daemon process. So we want to disable cache optimizations.
  */
 volatile Daemon_data daemon_data = {
-    .pid_file_name = "/tmp/SmartCCTV_daemon_pid",
-    .pid_file_descriptor = 0,
-    .pid_file_pointer = nullptr,
-    .camera_daemon_pid = 0,
+    .pid_file_name = "/tmp/SmartCCTV_daemon_pid",  // The path to the PID file.
+    .pid_file_descriptor = 0,                      // A descriptor to this file.
+    .pid_file_pointer = nullptr,                   // A pointer to this file.
+    .camera_daemon_pid = 0,                        // The PID of the daemon.
+    .home_directory = nullptr,                     // The path to the home directory, $HOME.
+    .daemon_exit_status = EXIT_SUCCESS  // The exit status of the daemon, to use in terminate_daemon(), assumed EXIT_SUCCESS.
 };
 
 
 void remove_pid_file(FILE* pid_file_pointer)
 {
     if (fclose(pid_file_pointer) == EOF) {
-	cerr << "Error: Could not close PID file ";
-        perror(daemon_data.pid_file_name);
+        syslog(log_facility | LOG_ERR, "Error: Could not close PID file %s : %m", daemon_data.pid_file_name);
     }
     if (unlink(daemon_data.pid_file_name) == -1) {
-        cerr << "Error: Could not unlink PID file ";
-        perror(daemon_data.pid_file_name);
-        clog << "System Admin please take a look at this." << endl;
+        syslog(log_facility | LOG_ERR, "Error: Could not unlink PID file %s : %m", daemon_data.pid_file_name);
+        syslog(log_facility | LOG_WARNING, "System Admin please take a look at this.");
     }
 }
 
@@ -70,49 +70,53 @@ bool checkPidFile(bool turn_on)
     // or is the PID file bad.
     // If the daemon is already running, then set the state to ON.
     if ( (daemon_data.pid_file_pointer = fopen(daemon_data.pid_file_name, "r")) != nullptr) {
-        clog << "A PID file already exists." << endl;
-	clog << "Checking if the SmartCCTV Daemon is running." << endl;
+        syslog(log_facility | LOG_NOTICE, "A PID file already exists.");
+        syslog(log_facility | LOG_NOTICE, "Checking if the SmartCCTV Daemon is running.");
 
-	char digit = '\0';
-	// Check if the PID file contains a valid process ID of the daemon process.
-	// Check if all the characters in the PID file are digits.
-	// Check if the PID file was not tampered.
-	while (true) {
-	    digit = fgetc(daemon_data.pid_file_pointer);
-	    if (digit == EOF)
-	        break;
+        char digit = '\0';
+        // Check if the PID file contains a valid process ID of the daemon process.
+        // Check if all the characters in the PID file are digits.
+        // Check if the PID file was not tampered.
+        while (true) {
+            digit = fgetc(daemon_data.pid_file_pointer);
+            if (digit == EOF)
+                break;
 
-	    if (digit == '\0' || digit == '\n')
-	        continue;
+            if (digit == '\0' || digit == '\n')
+                continue;
 
-	    if (!isdigit(digit)) {
-	        cerr << "Error: Invalid PID file: text is not a process id" << endl;
-		clog << "Removing Invalid PID file " << daemon_data.pid_file_name << endl;
-		remove_pid_file(daemon_data.pid_file_pointer);
-		exit(EXIT_FAILURE);
-	    }
-	}
+            if (!isdigit(digit)) {
+                syslog(log_facility | LOG_ERR, "Error: Invalid PID file: text is not a process id");
+                syslog(log_facility | LOG_WARNING, "Removing Invalid PID file %s", daemon_data.pid_file_name);
+                remove_pid_file(daemon_data.pid_file_pointer);
+                // for creating a greyed out effect in the GUI window
+                sleep(8);
+                exit(EXIT_FAILURE);
+            }
+        }
 
-	int daemon_pid = 0;
-	fseek(daemon_data.pid_file_pointer, 0, SEEK_SET);
-	fscanf(daemon_data.pid_file_pointer, "%d", &daemon_pid);
-	daemon_data.camera_daemon_pid = daemon_pid;
+        int daemon_pid = 0;
+        fseek(daemon_data.pid_file_pointer, 0, SEEK_SET);
+        fscanf(daemon_data.pid_file_pointer, "%d", &daemon_pid);
+        daemon_data.camera_daemon_pid = daemon_pid;
 
-	// Check if the PID file contains a valid process ID of the daemon process.
-	// If the PID file is indeed all digits, we must then make sure that it represents a valid process ID.
-	// kill() with a signal of 0, doesn't send a signal to the process, but it checks if that process exists.
-	// If that process doesn't exist, then kill() will return -1 and errno will be set.
-	// This only works if you're the user owning that process, or if you are the root user.
-	if (kill(daemon_pid, 0) == -1) {
-	    perror("Error: Invalid PID file");
-	    clog << "Removing PID file for defunct process " << daemon_pid << endl;
-	    remove_pid_file(daemon_data.pid_file_pointer);
-	    exit(EXIT_FAILURE);
-	// If that process does exist, it means that the SmartCCTV daemon is already running, so we can't
-	// start a new daemon process running.
-	} else {
-	    state = true;
-	}
+        // Check if the PID file contains a valid process ID of the daemon process.
+        // If the PID file is indeed all digits, we must then make sure that it represents a valid process ID.
+        // kill() with a signal of 0, doesn't send a signal to the process, but it checks if that process exists.
+        // If that process doesn't exist, then kill() will return -1 and errno will be set.
+        // This only works if you're the user owning that process, or if you are the root user.
+        if (kill(daemon_pid, 0) == -1) {
+            syslog(log_facility | LOG_ERR, "Error: Invalid PID file : %m");
+            syslog(log_facility | LOG_WARNING, "Removing PID file for defunct process %d", daemon_pid);
+            remove_pid_file(daemon_data.pid_file_pointer);
+            // for creating a greyed out effect in the GUI window
+            sleep(8);
+            exit(EXIT_FAILURE);
+        // If that process does exist, it means that the SmartCCTV daemon is already running, so we can't
+        // start a new daemon process running.
+        } else {
+            state = true;
+        }
     } else {
         state = false;
     }
@@ -134,6 +138,13 @@ void becomeDaemon()
         exit(EXIT_SUCCESS);
     }
 
+    closelog();
+    // Because the daemon is a background process without access to the terminal,
+    // the only way it can communicate with the outside world is through the logger.
+    // Using the syslog is de facto way of implementing logging in Linux/Unix.
+    openlog("SmartCCTV_Daemon", LOG_PID, log_facility);
+    atexit(closelog);
+
     // By default a child process inherits it's parent session ID and process group ID.
     // The daemon process inherited it's parent session ID and process group ID from the shell.
     // The daemon process is bound to the shell theough the session ID and process group ID.
@@ -143,19 +154,21 @@ void becomeDaemon()
     // This creates a new session, of which this process is the process group leader.
     // The new session is detatched from the controlling terminal.
     if (setsid() == -1) {
-	perror("Error: Could not change the session ID and process group ID");
-	// This time, it is actually the daemon process which gets killed,
-	// if it can't change the session ID and process group ID.
-        exit(EXIT_FAILURE);
+        syslog(log_facility | LOG_ERR, "Error: Could not change the session ID and process group ID : %m");
+        syslog(log_facility | LOG_CRIT, "SmartCCTV Daemon unexpected failure.");
+        // This time, it is actually the daemon process which gets killed,
+        // if it can't change the session ID and process group ID.
+        daemon_data.daemon_exit_status = EXIT_FAILURE;
+        terminate_daemon(0);
     }
 
     // sysconf(_SC_OPEN_MAX) is the number of all possible file descriptors
     // This closes all possible open file descriptors.
     long max_open_file_descriptors = sysconf(_SC_OPEN_MAX);
     for (long i = 0; i < max_open_file_descriptors; ++i) {
-	if (i != daemon_data.pid_file_descriptor) {
+        if (i != daemon_data.pid_file_descriptor) {
             close(i);
-	}
+        }
     }
 
     // Then we have to reopen stdin, stdout, and stderr because these three file descriptors
@@ -183,19 +196,11 @@ void becomeDaemon()
     // it would compromize the daemon's ability to do so.
     umask(0);
 
-    // TODO: Reset the environment variables.
-
     // Write the PID of the daemon process to the PID file.
     daemon_data.camera_daemon_pid = getpid();
     fprintf(daemon_data.pid_file_pointer, "%d", daemon_data.camera_daemon_pid);
     fclose(daemon_data.pid_file_pointer);
     close(daemon_data.pid_file_descriptor);
-
-    // Because the daemon is a background process without access to the terminal,
-    // the only way it can communicate with the outside world is through the logger.
-    // Using the syslog is de facto way of implementing logging in Linux/Unix.
-    openlog("camera", LOG_PID, LOG_LOCAL0);
-    atexit(closelog);
 
     // This sets up the signal handler for when the process is terminated.
     struct sigaction action1;
@@ -222,17 +227,20 @@ void becomeDaemon()
 void terminate_daemon(int)
 {
     if (close(daemon_data.pid_file_descriptor) == -1) {
-        syslog(LOG_LOCAL0 | LOG_ERR, "Error: could not close the PID file.");
+        syslog(log_facility | LOG_ERR, "Error: could not close the PID file.");
     }
 
     if (unlink(daemon_data.pid_file_name) == -1) {
-        syslog(LOG_LOCAL0 | LOG_ERR, "Error: could not remove the PID file.");
+        syslog(log_facility | LOG_ERR, "Error: could not remove the PID file.");
     } else {
-        syslog(LOG_LOCAL0 | LOG_NOTICE, "Removing the PID file.");
+        syslog(log_facility | LOG_NOTICE, "Removed the PID file successfully.");
     }
 
-    syslog(LOG_LOCAL0 | LOG_NOTICE, "The camera daemon is turning off.");
+    syslog(log_facility | LOG_NOTICE, "The camera daemon is turning off.");
 
-    exit(EXIT_SUCCESS);
+    exit(daemon_data.daemon_exit_status);
 }
+
+
+#pragma GCC diagnostic pop
 
