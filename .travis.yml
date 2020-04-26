@@ -1,7 +1,7 @@
 os: linux
-dist: unbuntu
+dist: ubuntu
 language: cpp
 
-test-compile:
+script:
   - cd ./UI
   - make
