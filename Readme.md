@@ -1,4 +1,5 @@
-# Smart CCTV Team Project
+# Smart CCTV Team Project <br> [![Build Status](https://travis-ci.org/ChicoState/UnitTestPractice.svg?branch=master)](https://travis-ci.org/ChicoState/SmartCCTV.svg?branch=master)
+
 </br>
 
 ## Team Product Description: 
@@ -35,7 +36,27 @@ sudo apt install libqt4-dev
 
 R
 ```
-- Dependencies
+blas (openblas-lapack-git, openblas-git, blas-tmg, flexiblas, blas-git, openblas-lapack-static, atlas-lapack, openblas-lapack, openblas-cblas-git, openblas)
+bzip2 (bzip2-git, bzip2-rustify-git, bzip2-with-lbzip2-symlinks)
+desktop-file-utils (desktop-file-utils-git)
+gcc-libs (gcc-libs-multilib-x32, fastgcc, gcc-libs-git, gcc-libs-multilib-git)
+lapack (openblas-lapack-git, lapack-tmg, flexiblas, lapack-git, openblas-lapack-static, atlas-lapack, openblas-lapack)
+libjpeg (libjpeg-droppatch, mozjpeg-git, mozjpeg, libjpeg-turbo)
+libpng (libpng-git)
+libtiff (libtiff-git)
+libxmu
+libxt
+ncurses (ncurses-git, ncurses-nohex)
+pango (pango-ubuntu, pango-git)
+pcre (pcre-svn)
+perl (perl-git)
+readline (readline-athame-git)
+unzip (unzip-natspec, unzip-iconv)
+xz (xz-git, xz-static-git)
+zip (zip-natspec)
+zlib (zlib-static, zlib-git, zlib-asm, zlib-ng-git)
+gcc-fortran (gcc-fortran-multilib-x32, gcc-fortran-git, gcc-fortran-multilib-git) (make)
+tk (tk85) (make)
 ```
-### Setting up
-Lorem Ipsum
+### Getting started
+<High-level description of startup/teardown procedure>
