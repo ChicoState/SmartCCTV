@@ -2,6 +2,6 @@ os: linux
 dist: unbuntu
 language: cpp
 
-test:
-  - make clean
+test-compile:
+  - cd ./UI
   - make
