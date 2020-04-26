@@ -1,0 +1,7 @@
+os: linux
+dist: unbuntu
+language: cpp
+
+test:
+  - make clean
+  - make
