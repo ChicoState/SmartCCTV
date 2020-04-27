@@ -1040,8 +1040,6 @@ mainwindow.o: ../UI/mainwindow.cpp ../UI/mainwindow.h \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt/5.9.9/gcc_64/include/QtGui/qicon.h \
 		ui_mainwindow.h \
-		../../../Qt/5.9.9/gcc_64/include/QtCore/QDate \
-		../../../Qt/5.9.9/gcc_64/include/QtCore/qdatetime.h \
 		../../../Qt/5.9.9/gcc_64/include/QtCore/QVariant \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/QAction \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/qaction.h \
@@ -1057,6 +1055,7 @@ mainwindow.o: ../UI/mainwindow.cpp ../UI/mainwindow.h \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/qbuttongroup.h \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/QDateEdit \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/qdatetimeedit.h \
+		../../../Qt/5.9.9/gcc_64/include/QtCore/qdatetime.h \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/qabstractspinbox.h \
 		../../../Qt/5.9.9/gcc_64/include/QtGui/qvalidator.h \
 		../../../Qt/5.9.9/gcc_64/include/QtCore/qregularexpression.h \
@@ -1086,7 +1085,8 @@ mainwindow.o: ../UI/mainwindow.cpp ../UI/mainwindow.h \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/QTabWidget \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/QWidget \
 		../high_level_cctv_daemon_apis.h \
-		../../../Qt/5.9.9/gcc_64/include/QtGui/QPixmap
+		../../../Qt/5.9.9/gcc_64/include/QtGui/QPixmap \
+		../../../Qt/5.9.9/gcc_64/include/QtCore/QtDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../UI/mainwindow.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 

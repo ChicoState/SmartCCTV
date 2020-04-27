@@ -5,6 +5,7 @@
 #include <syslog.h>     /* for openlog(), syslog(), closelog() */
 #include <cstdlib>      /* for getenv(), atexit(), exit(), EXIT_FAILURE */
 #include <QPixmap>
+#include <QtDebug>
 
 using namespace std;
 
@@ -25,6 +26,10 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     set_daemon_info(home_directory);
+    QDate date = QDate::currentDate();
+    ui->dateEdit->setDate(date);
+    ui->dateEdit->setMaximumDate(date);
+    ui->dateEdit->setMinimumDate(date.addMonths(-6));
 }
 
 MainWindow::~MainWindow()
@@ -35,10 +40,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    QString imgPath = home_directory;
-    imgPath.append("/Desktop/SmartCCTV/Charts/" + ui->dateEdit->date().toString("ddMMyyyy") + ".png");
-    QPixmap img(imgPath);
-    ui->label->setPixmap(img.scaled(ui->label->width(),ui->label->height(),Qt::KeepAspectRatio));
+//    QString imgPath = home_directory;
+//    imgPath.append("/Desktop/SmartCCTV/Charts/" + ui->dateEdit->date().toString("ddMMyyyy") + ".png");
+//    qDebug() << ui->dateEdit->date().addDays(-1).toString("ddMMyyyy");
+    int position = ui->horizontalSlider->value();
+    qDebug() << position;
+    QString arg;
+    for(int i = position; i >= 0; i--){
+        arg.append(ui->dateEdit->date().addDays(-i).toString("ddMMyyyy") + " ");
+    }
+    qDebug() << arg;
+//    QPixmap img(imgPath);
+//    ui->label->setPixmap(img.scaled(ui->label->width(),ui->label->height(),Qt::KeepAspectRatio));
 }
 
 void MainWindow::on_pushButton_Run_clicked()
@@ -69,10 +82,10 @@ void MainWindow::on_pushButton_Kill_clicked()
 void MainWindow::on_horizontalSlider_sliderMoved(int position)
 {
     if (position > 1){
-        ui->day_label->setText("Days");
+        ui->day_label->setText("Additional Days");
     }
     else{
-        ui->day_label->setText("Day");
+        ui->day_label->setText("Additional Day");
     }
     ui->range_counter->setText(QString::number(position));
 }

@@ -9,7 +9,6 @@
 #ifndef UI_MAINWINDOW_H
 #define UI_MAINWINDOW_H
 
-#include <QtCore/QDate>
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
@@ -123,24 +122,23 @@ public:
         dateEdit->setLayoutDirection(Qt::LeftToRight);
         dateEdit->setDateTime(QDateTime(QDate(2020, 4, 14), QTime(0, 0, 0)));
         dateEdit->setMinimumDateTime(QDateTime(QDate(2020, 3, 1), QTime(0, 0, 0)));
-        dateEdit->setMaximumDate(QDate(2020, 12, 31));
         dateEdit->setCalendarPopup(true);
         dateEdit->setTimeSpec(Qt::LocalTime);
         range_counter = new QLabel(tab_2);
         range_counter->setObjectName(QStringLiteral("range_counter"));
         range_counter->setEnabled(true);
-        range_counter->setGeometry(QRect(300, 30, 21, 17));
+        range_counter->setGeometry(QRect(270, 32, 21, 17));
         range_counter->setAlignment(Qt::AlignCenter);
         horizontalSlider = new QSlider(tab_2);
         horizontalSlider->setObjectName(QStringLiteral("horizontalSlider"));
         horizontalSlider->setGeometry(QRect(250, 50, 160, 21));
         horizontalSlider->setMinimum(1);
-        horizontalSlider->setMaximum(7);
+        horizontalSlider->setMaximum(6);
         horizontalSlider->setOrientation(Qt::Horizontal);
         horizontalSlider->setTickPosition(QSlider::NoTicks);
         day_label = new QLabel(tab_2);
         day_label->setObjectName(QStringLiteral("day_label"));
-        day_label->setGeometry(QRect(320, 30, 67, 17));
+        day_label->setGeometry(QRect(290, 30, 111, 20));
         tabWidget->addTab(tab_2, QString());
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
@@ -150,7 +148,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -169,8 +167,8 @@ public:
         label_2->setText(QApplication::translate("MainWindow", "Date:", Q_NULLPTR));
         pushButton->setText(QApplication::translate("MainWindow", "Find", Q_NULLPTR));
         dateEdit->setDisplayFormat(QApplication::translate("MainWindow", "M/d/yyyy", Q_NULLPTR));
-        range_counter->setText(QApplication::translate("MainWindow", "1", Q_NULLPTR));
-        day_label->setText(QApplication::translate("MainWindow", "Day", Q_NULLPTR));
+        range_counter->setText(QApplication::translate("MainWindow", "0", Q_NULLPTR));
+        day_label->setText(QApplication::translate("MainWindow", "Additional Day", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Statistics", Q_NULLPTR));
     } // retranslateUi
 

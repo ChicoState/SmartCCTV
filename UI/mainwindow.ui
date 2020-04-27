@@ -54,7 +54,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <property name="sizePolicy">
@@ -240,13 +240,6 @@
         <day>1</day>
        </datetime>
       </property>
-      <property name="maximumDate">
-       <date>
-        <year>2020</year>
-        <month>12</month>
-        <day>31</day>
-       </date>
-      </property>
       <property name="displayFormat">
        <string>M/d/yyyy</string>
       </property>
@@ -263,14 +256,14 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>30</y>
+        <x>270</x>
+        <y>32</y>
         <width>21</width>
         <height>17</height>
        </rect>
       </property>
       <property name="text">
-       <string>1</string>
+       <string>0</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -289,7 +282,7 @@
        <number>1</number>
       </property>
       <property name="maximum">
-       <number>7</number>
+       <number>6</number>
       </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -301,14 +294,14 @@
      <widget class="QLabel" name="day_label">
       <property name="geometry">
        <rect>
-        <x>320</x>
+        <x>290</x>
         <y>30</y>
-        <width>67</width>
-        <height>17</height>
+        <width>111</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>Day</string>
+       <string>Additional Day</string>
       </property>
      </widget>
     </widget>
