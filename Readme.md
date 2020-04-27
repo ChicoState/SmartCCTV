@@ -12,7 +12,7 @@ Deamon
 The daemon code itself has no dependencies since it's using low level Unix OS API.
 ``` 
 
-OpenCV (Version 4.2.0)
+OpenCV (Version 3.4.0)
 ```
 epel-release git gcc gcc-c++ cmake3 qt5-qtbase-devel python 
 python-devel python-pip cmake python-devel 
@@ -21,7 +21,18 @@ libwebp-devel libjpeg-turbo-devel libtiff-devel libdc1394-devel tbb-devel
 numpy eigen3-devel gstreamer-plugins-base-devel freeglut-devel mesa-libGL 
 mesa-libGL-devel boost boost-thread boost-devel libv4l-devel
 
+Default installation instructions here should work:
 https://www.learnopencv.com/install-opencv-4-on-ubuntu-18-04/
+
+Test your installation by compiling and running an OpenCV sample:
+cd /path/to/opencv/samples/cpp/
+pkg-config --cflags --libs opencv
+g++ -ggdb facedetect.cpp -o facedetect `pkg-config --cflags --libs opencv`
+./facedetect
+
+You may need to fix a linking error when running the OpenCVcode. This should do it:
+sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf' 
+sudo ldconfig
 ``` 
 
 QT Creator (Version 4.11.1)
