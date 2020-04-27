@@ -24,6 +24,8 @@ private slots:
 
     void on_horizontalSlider_sliderMoved(int position);
 
+    void on_pushButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
     const char* home_directory;

@@ -89,3 +89,8 @@ void MainWindow::on_horizontalSlider_sliderMoved(int position)
     }
     ui->range_counter->setText(QString::number(position));
 }
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    ui->label_3->setText("SCREEN FOR LIVE VIEW OF ALL CAMERAS");
+}
