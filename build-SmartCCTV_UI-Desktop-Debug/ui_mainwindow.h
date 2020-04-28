@@ -13,6 +13,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QDateEdit>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
@@ -36,6 +37,9 @@ public:
     QLabel *daemon_label;
     QPushButton *pushButton_2;
     QLabel *label_3;
+    QCheckBox *checkBox;
+    QCheckBox *checkBox_2;
+    QCheckBox *checkBox_3;
     QWidget *tab_2;
     QLabel *label;
     QLabel *label_2;
@@ -77,7 +81,7 @@ public:
         tab->setSizePolicy(sizePolicy);
         pushButton_Run = new QPushButton(tab);
         pushButton_Run->setObjectName(QStringLiteral("pushButton_Run"));
-        pushButton_Run->setGeometry(QRect(280, 270, 181, 41));
+        pushButton_Run->setGeometry(QRect(10, 140, 181, 41));
         QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy2.setHorizontalStretch(0);
         sizePolicy2.setVerticalStretch(0);
@@ -86,21 +90,30 @@ public:
         pushButton_Kill = new QPushButton(tab);
         pushButton_Kill->setObjectName(QStringLiteral("pushButton_Kill"));
         pushButton_Kill->setEnabled(true);
-        pushButton_Kill->setGeometry(QRect(520, 270, 181, 41));
+        pushButton_Kill->setGeometry(QRect(10, 200, 181, 41));
         daemon_label = new QLabel(tab);
         daemon_label->setObjectName(QStringLiteral("daemon_label"));
         daemon_label->setGeometry(QRect(220, 320, 301, 21));
         daemon_label->setAlignment(Qt::AlignCenter);
         pushButton_2 = new QPushButton(tab);
         pushButton_2->setObjectName(QStringLiteral("pushButton_2"));
-        pushButton_2->setGeometry(QRect(40, 270, 181, 41));
+        pushButton_2->setGeometry(QRect(10, 260, 181, 41));
         label_3 = new QLabel(tab);
         label_3->setObjectName(QStringLiteral("label_3"));
-        label_3->setGeometry(QRect(40, 20, 661, 241));
+        label_3->setGeometry(QRect(210, 20, 511, 311));
         label_3->setFrameShape(QFrame::StyledPanel);
         label_3->setFrameShadow(QFrame::Plain);
         label_3->setMidLineWidth(0);
         label_3->setAlignment(Qt::AlignCenter);
+        checkBox = new QCheckBox(tab);
+        checkBox->setObjectName(QStringLiteral("checkBox"));
+        checkBox->setGeometry(QRect(20, 100, 141, 23));
+        checkBox_2 = new QCheckBox(tab);
+        checkBox_2->setObjectName(QStringLiteral("checkBox_2"));
+        checkBox_2->setGeometry(QRect(20, 70, 141, 23));
+        checkBox_3 = new QCheckBox(tab);
+        checkBox_3->setObjectName(QStringLiteral("checkBox_3"));
+        checkBox_3->setGeometry(QRect(20, 40, 141, 23));
         tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
         tab_2->setObjectName(QStringLiteral("tab_2"));
@@ -162,6 +175,9 @@ public:
         daemon_label->setText(QString());
         pushButton_2->setText(QApplication::translate("MainWindow", "All Cameras", Q_NULLPTR));
         label_3->setText(QApplication::translate("MainWindow", "SCREEN FOR LIVE VIEW OF CAMERA", Q_NULLPTR));
+        checkBox->setText(QApplication::translate("MainWindow", "Outline", Q_NULLPTR));
+        checkBox_2->setText(QApplication::translate("MainWindow", "Human Detection", Q_NULLPTR));
+        checkBox_3->setText(QApplication::translate("MainWindow", "Motion Detection", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Home", Q_NULLPTR));
         label->setText(QString());
         label_2->setText(QApplication::translate("MainWindow", "Date:", Q_NULLPTR));

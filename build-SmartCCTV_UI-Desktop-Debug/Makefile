@@ -1053,6 +1053,9 @@ mainwindow.o: ../UI/mainwindow.cpp ../UI/mainwindow.h \
 		../../../Qt/5.9.9/gcc_64/include/QtGui/qinputmethod.h \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/QButtonGroup \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/qbuttongroup.h \
+		../../../Qt/5.9.9/gcc_64/include/QtWidgets/QCheckBox \
+		../../../Qt/5.9.9/gcc_64/include/QtWidgets/qcheckbox.h \
+		../../../Qt/5.9.9/gcc_64/include/QtWidgets/qabstractbutton.h \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/QDateEdit \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/qdatetimeedit.h \
 		../../../Qt/5.9.9/gcc_64/include/QtCore/qdatetime.h \
@@ -1080,7 +1083,6 @@ mainwindow.o: ../UI/mainwindow.cpp ../UI/mainwindow.h \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/qmenu.h \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/QPushButton \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/qpushbutton.h \
-		../../../Qt/5.9.9/gcc_64/include/QtWidgets/qabstractbutton.h \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/QSlider \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/QTabWidget \
 		../../../Qt/5.9.9/gcc_64/include/QtWidgets/QWidget \

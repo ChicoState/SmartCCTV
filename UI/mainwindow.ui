@@ -69,8 +69,8 @@
      <widget class="QPushButton" name="pushButton_Run">
       <property name="geometry">
        <rect>
-        <x>280</x>
-        <y>270</y>
+        <x>10</x>
+        <y>140</y>
         <width>181</width>
         <height>41</height>
        </rect>
@@ -91,8 +91,8 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>520</x>
-        <y>270</y>
+        <x>10</x>
+        <y>200</y>
         <width>181</width>
         <height>41</height>
        </rect>
@@ -120,8 +120,8 @@
      <widget class="QPushButton" name="pushButton_2">
       <property name="geometry">
        <rect>
-        <x>40</x>
-        <y>270</y>
+        <x>10</x>
+        <y>260</y>
         <width>181</width>
         <height>41</height>
        </rect>
@@ -133,10 +133,10 @@
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>40</x>
+        <x>210</x>
         <y>20</y>
-        <width>661</width>
-        <height>241</height>
+        <width>511</width>
+        <height>311</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -153,6 +153,45 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>100</y>
+        <width>141</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Outline</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_2">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>70</y>
+        <width>141</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Human Detection</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_3">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>40</y>
+        <width>141</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Motion Detection</string>
       </property>
      </widget>
     </widget>
