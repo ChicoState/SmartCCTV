@@ -36,7 +36,7 @@ TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = SmartCCTV_UI1.0.0
 DISTDIR = /home/slavik/Git/SmartCCTV/UI/.tmp/SmartCCTV_UI1.0.0
-LINK          = g++
+LINK          = g++ `pkg-config --cflags --libs opencv`
 LFLAGS        = -Wl,-O1
 LIBS          = $(SUBLIBS) -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
@@ -399,7 +399,10 @@ camera_daemon.o: ../camera_daemon.cpp ../camera_daemon.h \
 		../camera.hpp \
 		../humanFilter.hpp \
 		../low_level_cctv_daemon_apis.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o camera_daemon.o ../camera_daemon.cpp
+	g++ -std=c++11 -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ ../camera_daemon.cpp ../camera.cpp ../humanFilter.cpp -o camera_daemon.o 
+	
+	#g++ -std=c++11 -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ AITest2.cpp camera.cpp humanFilter.cpp -o AITest
+
 
 high_level_cctv_daemon_apis.o: ../high_level_cctv_daemon_apis.cpp ../high_level_cctv_daemon_apis.h \
 		../low_level_cctv_daemon_apis.h
@@ -420,11 +423,6 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
 	
-humanFilter.o: ../humanFilter.cpp ../humanFilter.hpp
-	$(CXX) -c $(CXXFLAGS) -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ $(INCPATH) -o humanFilter.o ../humanFilter.cpp
-	
-camera.o: ../camera.cpp ../camera.hpp
-	$(CXX) -c $(CXXFLAGS) -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ $(INCPATH) -o camera.o ../camera.cpp
 ####### Install
 
 install_target: first FORCE
