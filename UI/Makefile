@@ -395,15 +395,6 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 
 ####### Compile
 
-camera_daemon.o: ../camera_daemon.cpp ../camera_daemon.h \
-		../camera.hpp \
-		../humanFilter.hpp \
-		../low_level_cctv_daemon_apis.h
-	g++ -std=c++11 -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ ../camera_daemon.cpp ../camera.cpp ../humanFilter.cpp -o camera_daemon.o 
-	
-	#g++ -std=c++11 -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ AITest2.cpp camera.cpp humanFilter.cpp -o AITest
-
-
 high_level_cctv_daemon_apis.o: ../high_level_cctv_daemon_apis.cpp ../high_level_cctv_daemon_apis.h \
 		../low_level_cctv_daemon_apis.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o high_level_cctv_daemon_apis.o ../high_level_cctv_daemon_apis.cpp
@@ -422,6 +413,15 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
+	
+camera_daemon.o: ../camera_daemon.cpp ../camera_daemon.h \
+	../camera.hpp \
+	../humanFilter.hpp \
+	../low_level_cctv_daemon_apis.h
+	g++ -c -std=c++17 -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ ../camera_daemon.cpp ../camera_daemon.h ../camera.cpp ../low_level_cctv_daemon_apis.h ../humanFilter.cpp 
+	
+	#g++ -std=c++11 -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ AITest2.cpp camera.cpp humanFilter.cpp -o AITest
+
 	
 ####### Install
 
