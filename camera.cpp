@@ -12,40 +12,44 @@
  */
 
 #include <opencv2/imgcodecs.hpp>
+#include <syslog.h>  /* for syslog() */
 #include "camera.hpp"
+
+#define log_facility LOG_LOCAL0
 
 Camera::Camera(int cameraID)
 {
 	this->cameraID = cameraID; 
 	readFilePath = "";
-    recording = false;
-    streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace the string literal address with daemon_data.home_directory
+    	recording = false;
+    	streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace the string literal address with daemon_data.home_directory
 	videoSaveDir = "/home/slavik/SmartCCTV/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace with "daemon_data.home_directory"
 	//std::cout << "Prepared to open camera." << std::endl;
+	
 	cap.open(cameraID);
 	if (!cap.isOpened())
-    {
+    	{
 		//daemon_data.daemon_exit_status = EXIT_FAILURE;
 		//terminate_daemon(0);
 		return; //Placeholder
-    }
+    	}
 }
 
 Camera::Camera(std::string readFilePath)
 {
 	this->readFilePath = readFilePath; 
 	cameraID = -1;
-    recording = false;
-    streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace the string literal address with daemon_data.home_directory
-    videoSaveDir = "/home/slavik/SmartCCTV/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace with "daemon_data.home_directory"
+    	recording = false;
+    	streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace the string literal address with daemon_data.home_directory
+    	videoSaveDir = "/home/slavik/SmartCCTV/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace with "daemon_data.home_directory"
     
-    cap.open(readFilePath);
+    	cap.open(readFilePath);
 	if (!cap.isOpened())
-    {
+    	{
 		//daemon_data.daemon_exit_status = EXIT_FAILURE;
 		//terminate_daemon(0);
 		return;//Placeholder
-    }
+    	}
 }
 
 void Camera::clearExpiredFrames()
