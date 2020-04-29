@@ -115,7 +115,7 @@ void Camera::saveVideo()
 		video.write(frameBackCapture[i].frame);
 	}
 	
-	syslog(log_facility | LOG_NOTICE, "Saved " + fullVideoString);
+	syslog(log_facility | LOG_NOTICE, ("Saved " + fullVideoString).c_str());
 	//std::cout << "Saved " << fullVideoString << std::endl;
 	frameBackCapture.clear();
 }
@@ -146,7 +146,7 @@ void Camera::record()
 		cap >> frame;
 		if(frame.empty())
 		{
-			syslog(log_facility | LOG_NOTICE, "Error: Corrupt frame on camera " + std::to_string(cameraID));
+			syslog(log_facility | LOG_NOTICE, ("Error: Corrupt frame on camera " + std::to_string(cameraID)).c_str());
 			//std::cout << "Error: Corrupt frame on camera " << cameraID << std::endl;
 			return;
 		}

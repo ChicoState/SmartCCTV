@@ -11,11 +11,16 @@
  * Each instance of this class is to correspond to a single camera or video file.
  */
 
+#ifndef CAMERA_HPP
+#define CAMERA_HPP
+
 #include <vector>
 #include <chrono>
+#include <syslog.h>  /* for syslog() */
 #include "humanFilter.hpp"
 //#include "faceFilter.hpp"
 //#include "motionFilter.hpp"
+#define log_facility LOG_LOCAL0
 
 //using namespace std;
 //using namespace cv;
@@ -52,3 +57,4 @@ class Camera
 	//MotionFilter motionFilter;
 	const bool debug = true;
 };
+#endif
