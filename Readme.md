@@ -22,7 +22,7 @@ numpy eigen3-devel gstreamer-plugins-base-devel freeglut-devel mesa-libGL
 mesa-libGL-devel boost boost-thread boost-devel libv4l-devel
 
 Default installation instructions here should work:
-https://www.learnopencv.com/install-opencv-4-on-ubuntu-18-04/
+https://www.learnopencv.com/install-opencv3-on-ubuntu/
 
 Test your installation by compiling and running an OpenCV sample:
 cd /path/to/opencv/samples/cpp/
@@ -31,7 +31,7 @@ g++ -ggdb facedetect.cpp -o facedetect `pkg-config --cflags --libs opencv`
 ./facedetect
 
 You may need to fix a linking error when running the OpenCVcode. This should do it:
-sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf' 
+sudo sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf' 
 sudo ldconfig
 ``` 
 
