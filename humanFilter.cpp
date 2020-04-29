@@ -31,18 +31,18 @@ bool HumanFilter::runRecognition(cv::Mat &frame)
 	}
 	
 	for (size_t i = 0; i < boxes.size(); i++)
-    {
-        cv::Rect &rect = boxes[i];
+	{
+        	cv::Rect &rect = boxes[i];
         
-        rect.x += cvRound(rect.width*0.1);
-        rect.width = cvRound(rect.width*0.8);
-        rect.y += cvRound(rect.height*0.07);
-        rect.height = cvRound(rect.height*0.8);
+        	rect.x += cvRound(rect.width*0.1);
+        	rect.width = cvRound(rect.width*0.8);
+        	rect.y += cvRound(rect.height*0.07);
+        	rect.height = cvRound(rect.height*0.8);
         
-        if(true) //placeholder- replace with if(daemon_data.enable_boxes) once daemon_data API is ready
-        {
+        	if(true) //placeholder- replace with if(daemon_data.enable_boxes) once daemon_data API is ready
+        	{
 			rectangle(frame, rect.tl(), rect.br(), cv::Scalar(0, 255, 0), 2);
 		}
-    }
+    	}
 	return true;
 }
