@@ -4,7 +4,7 @@
  * Created On:  2/27/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  4/16/20
+ * Modified On:  4/29/20
  *
  * Description:
  * This file contains declarations of functions of the SmartCCTV Daemon's internal API.
@@ -32,43 +32,6 @@ struct Daemon_data {
     const char* home_directory;  // The path to the home directory, $HOME.
     int daemon_exit_status;      // The exit status of the daemon, to use in terminate_daemon(), assumed EXIT_SUCCESS.
 };
-
-
-/**
- * This function deletes the PID file.
- * It first closes the passed in FILE* and then it unlinks the actual file.
- *
- * This function is called only in the GUI process.
- *
- * @param FILE* pid_file_pointer - A pointer to the PID file.
- */
-void remove_pid_file(FILE* pid_file_pointer);
-
-
-/**
- * This function checks if the PID file exists and if it is valid.
- * If the PID file is invalid (either it does not contain a process ID or there is no such process)
- * then an error message is printed to the screen and the program is exited.
- *
- * If either the PID file does not exist, or it exists and it is valid,
- * a bool value is returned depeding on bool turn_on.
- *
- * This function is called only in the GUI process.
- *
- * @param bool turn_on - This is a command to turn the daemon on, or turn it off.
- *             turn_on == true if the daemon is being turned on.
- *             turn_on == false if the daemon is being turned off.
- *        If you want to turn the daemon on, and the daemon is already on, the function returns false,
- *        else it returns true.
- *        If you want to turn the daemon off, and the daemon is already off (not running), the runction returns false,
- *        else it returns true.
- *
- * @return bool - It returns false if the command specified cannot be completed.
- *                It returns true if the command specified can be completed.
- *                If there is an error reading the PID file, this function does not return, instead it
- *                terminates the program.
- */
-bool checkPidFile(bool turn_on);
 
 
 /**

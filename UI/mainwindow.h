@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "../high_level_cctv_daemon_apis.h"
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -28,6 +29,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    Daemon_facade daemon_facade;
     const char* home_directory;
 };
 

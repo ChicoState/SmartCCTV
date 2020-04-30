@@ -16,6 +16,7 @@
 #include "camera_daemon.h"
 #include "low_level_cctv_daemon_apis.h"
 #include "camera.hpp"
+#include "write_message.h"
 #include <syslog.h>  /* for syslog() */
 #include <unistd.h>  /* for sleep() */
 

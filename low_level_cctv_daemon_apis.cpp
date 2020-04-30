@@ -4,7 +4,7 @@
  * Created On:  2/27/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  4/16/20
+ * Modified On:  4/29/20
  *
  * Description:
  * This file contains definitions of functions of the SmartCCTV Daemon's internal API.
@@ -13,18 +13,18 @@
 
 #include "low_level_cctv_daemon_apis.h"
 #include "camera_daemon.h"
+#include "write_message.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>   /* for umask(), mode permissions constants */
 #include <fcntl.h>      /* for O_* constants, open() */
-#include <signal.h>     /* for kill() */
-#include <unistd.h>     /* for close(), unlink(), fork(), setsid(), sysconf(), chdir(), getpid(), sleep() */
+#include <unistd.h>     /* for close(), unlink(), fork(), setsid(), sysconf(), chdir(), getpid() */
+#include <signal.h>     /* for sigemptyset(), signal constants */
 #include <errno.h>      /* for errno */
 #include <syslog.h>     /* for openlog(), syslog(), closelog() */
 #include <cstdlib>      /* for exit(), atexit(), EXIT_SUCCESS, EXIT_FAILURE */
-#include <cstdio>       /* for fopen(), fclose(), fseek(), fgetc(), fscanf(), fprintf() */
+#include <cstdio>       /* for fclose(), fprintf() */
 #include <cstring>      /* for strerror() */
-#include <cctype>       /* for isdigit() */
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
@@ -45,84 +45,6 @@ volatile Daemon_data daemon_data = {
     .home_directory = nullptr,                     // The path to the home directory, $HOME.
     .daemon_exit_status = EXIT_SUCCESS  // The exit status of the daemon, to use in terminate_daemon(), assumed EXIT_SUCCESS.
 };
-
-
-void remove_pid_file(FILE* pid_file_pointer)
-{
-    if (fclose(pid_file_pointer) == EOF) {
-        syslog(log_facility | LOG_ERR, "Error: Could not close PID file %s : %m", daemon_data.pid_file_name);
-    }
-    if (unlink(daemon_data.pid_file_name) == -1) {
-        syslog(log_facility | LOG_ERR, "Error: Could not unlink PID file %s : %m", daemon_data.pid_file_name);
-        syslog(log_facility | LOG_WARNING, "System Admin please take a look at this.");
-    }
-}
-
-
-bool checkPidFile(bool turn_on)
-{
-    //enum { ON, OFF } state = OFF;
-    bool state = false;
-    // Try to open the PID file, check if the daemon is already running.
-    // If the daemon is not already running, then set the state to OFF,
-    // we can return from the function and start up the daemon.
-    // If a PID file exists, we must check is the daemon already running
-    // or is the PID file bad.
-    // If the daemon is already running, then set the state to ON.
-    if ( (daemon_data.pid_file_pointer = fopen(daemon_data.pid_file_name, "r")) != nullptr) {
-        syslog(log_facility | LOG_NOTICE, "A PID file already exists.");
-        syslog(log_facility | LOG_NOTICE, "Checking if the SmartCCTV Daemon is running.");
-
-        char digit = '\0';
-        // Check if the PID file contains a valid process ID of the daemon process.
-        // Check if all the characters in the PID file are digits.
-        // Check if the PID file was not tampered.
-        while (true) {
-            digit = fgetc(daemon_data.pid_file_pointer);
-            if (digit == EOF)
-                break;
-
-            if (digit == '\0' || digit == '\n')
-                continue;
-
-            if (!isdigit(digit)) {
-                syslog(log_facility | LOG_ERR, "Error: Invalid PID file: text is not a process id");
-                syslog(log_facility | LOG_WARNING, "Removing Invalid PID file %s", daemon_data.pid_file_name);
-                remove_pid_file(daemon_data.pid_file_pointer);
-                // for creating a greyed out effect in the GUI window
-                sleep(8);
-                exit(EXIT_FAILURE);
-            }
-        }
-
-        int daemon_pid = 0;
-        fseek(daemon_data.pid_file_pointer, 0, SEEK_SET);
-        fscanf(daemon_data.pid_file_pointer, "%d", &daemon_pid);
-        daemon_data.camera_daemon_pid = daemon_pid;
-
-        // Check if the PID file contains a valid process ID of the daemon process.
-        // If the PID file is indeed all digits, we must then make sure that it represents a valid process ID.
-        // kill() with a signal of 0, doesn't send a signal to the process, but it checks if that process exists.
-        // If that process doesn't exist, then kill() will return -1 and errno will be set.
-        // This only works if you're the user owning that process, or if you are the root user.
-        if (kill(daemon_pid, 0) == -1) {
-            syslog(log_facility | LOG_ERR, "Error: Invalid PID file : %m");
-            syslog(log_facility | LOG_WARNING, "Removing PID file for defunct process %d", daemon_pid);
-            remove_pid_file(daemon_data.pid_file_pointer);
-            // for creating a greyed out effect in the GUI window
-            sleep(8);
-            exit(EXIT_FAILURE);
-        // If that process does exist, it means that the SmartCCTV daemon is already running, so we can't
-        // start a new daemon process running.
-        } else {
-            state = true;
-        }
-    } else {
-        state = false;
-    }
-
-    return state != turn_on;
-}
 
 
 void becomeDaemon()
@@ -156,6 +78,7 @@ void becomeDaemon()
     if (setsid() == -1) {
         syslog(log_facility | LOG_ERR, "Error: Could not change the session ID and process group ID : %m");
         syslog(log_facility | LOG_CRIT, "SmartCCTV Daemon unexpected failure.");
+        write_message("SmartCCTV unexpected failure.");
         // This time, it is actually the daemon process which gets killed,
         // if it can't change the session ID and process group ID.
         daemon_data.daemon_exit_status = EXIT_FAILURE;
@@ -164,14 +87,14 @@ void becomeDaemon()
 
     // sysconf(_SC_OPEN_MAX) is the number of all possible file descriptors
     // This closes all possible open file descriptors.
-    /**
+    /*
     long max_open_file_descriptors = sysconf(_SC_OPEN_MAX);
     for (long i = 0; i < max_open_file_descriptors; ++i) {
         if (i != daemon_data.pid_file_descriptor) {
             close(i);
         }
     }
-    **/
+    */
 
     // Then we have to reopen stdin, stdout, and stderr because these three file descriptors
     // have to be open by the POSIX standard.
