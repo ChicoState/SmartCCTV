@@ -28,5 +28,7 @@ void camera_daemon()
 
 	Camera cam(0);
 	cam.record();
+	
+	syslog(log_facility | LOG_NOTICE, "The camera daemon has completed running.");
 }
 

@@ -19,10 +19,11 @@
 
 Camera::Camera(int cameraID)
 {
+	syslog(log_facility | LOG_NOTICE, "Creating camera");
 	this->cameraID = cameraID; 
 	readFilePath = "";
-    	recording = false;
-    	streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace the string literal address with daemon_data.home_directory
+    recording = false;
+    streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace the string literal address with daemon_data.home_directory
 	videoSaveDir = "/home/slavik/SmartCCTV/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace with "daemon_data.home_directory"
 	//std::cout << "Prepared to open camera." << std::endl;
 	
@@ -31,6 +32,8 @@ Camera::Camera(int cameraID)
     	{
 		//daemon_data.daemon_exit_status = EXIT_FAILURE;
 		//terminate_daemon(0);
+		syslog(log_facility | LOG_NOTICE, "Failed to open camera");
+
 		return; //Placeholder
     	}
 }
@@ -119,7 +122,7 @@ void Camera::saveVideo()
 		video.write(frameBackCapture[i].frame);
 	}
 	
-	syslog(log_facility | LOG_NOTICE, ("Saved " + fullVideoString).c_str());
+	syslog(log_facility | LOG_NOTICE, "Saved a video");
 	//std::cout << "Saved " << fullVideoString << std::endl;
 	frameBackCapture.clear();
 }
@@ -138,6 +141,8 @@ void Camera::checkRecordingLength()
 
 void Camera::record()
 {
+	syslog(log_facility | LOG_NOTICE, "Camera recording.");
+
 	int x = 0;
 	cv::Mat frame;
 	while(true)
@@ -150,11 +155,12 @@ void Camera::record()
 		cap >> frame;
 		if(frame.empty())
 		{
-			syslog(log_facility | LOG_NOTICE, ("Error: Corrupt frame on camera " + std::to_string(cameraID)).c_str());
+			syslog(log_facility | LOG_NOTICE, "Error: Corrupt frame on camera.");
 			//std::cout << "Error: Corrupt frame on camera " << cameraID << std::endl;
 			return;
 		}
 		
+		syslog(log_facility | LOG_NOTICE, "Running Human Recognition.");
 		bool humanFound = humanFilter.runRecognition(frame);
 		//bool faceFound = faceFilter.runRecognition(frame);
 		//bool motionDetected = motionFilter.runDetection(frame);
@@ -170,6 +176,7 @@ void Camera::record()
 		
 		if(true) //Placeholder- replace with if(daemon_data.is_livestreaming) or equivalent
 		{
+			syslog(log_facility | LOG_NOTICE, "Saving frame to livestream dir");
 			saveToStream(frame, x);
 		}
 		
@@ -180,7 +187,13 @@ void Camera::record()
 				//std::cout << "DETECTION EVENT!!!" << std::endl;
 				recordingStartTime = std::chrono::high_resolution_clock::now();
 				recording = true;
+				syslog(log_facility | LOG_NOTICE, "Human found!!!");
+
 			}
+		}
+		else
+		{
+				syslog(log_facility | LOG_NOTICE, "Human not found...");
 		}
 		
 		if(recording)
@@ -190,6 +203,8 @@ void Camera::record()
 		
 		saveFrameToBuffer(frame);
 		x++;
+		syslog(log_facility | LOG_NOTICE, "Through the loop...");
+
 	}
 	
 	cap.release();
