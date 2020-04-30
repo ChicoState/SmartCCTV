@@ -48,7 +48,7 @@ LFLAGS        = -Wl,-O1
 # When you run qmake it will generate a Makefile. Copy and paste the LIBS from that, replacing this line.
 LIBS          = $(SUBLIBS) -L/usr/lib/x86_64-linux-gnu -lQtGui -lQtCore -lGL
 
-ALL_LIBS      = $(LIBS) -lpthread -lrt
+ALL_LIBS      = $(LIBS) -lpthread -lrt `pkg-config opencv --cflags --libs`
 
 
 DEL_FILE      = rm -f
