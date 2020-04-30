@@ -164,12 +164,14 @@ void becomeDaemon()
 
     // sysconf(_SC_OPEN_MAX) is the number of all possible file descriptors
     // This closes all possible open file descriptors.
+    /**
     long max_open_file_descriptors = sysconf(_SC_OPEN_MAX);
     for (long i = 0; i < max_open_file_descriptors; ++i) {
         if (i != daemon_data.pid_file_descriptor) {
             close(i);
         }
     }
+    **/
 
     // Then we have to reopen stdin, stdout, and stderr because these three file descriptors
     // have to be open by the POSIX standard.
