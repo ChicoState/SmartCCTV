@@ -13,6 +13,7 @@
  * Put any code you want the daemon to execute in thise function.
  */
 
+
 #include "camera_daemon.h"
 #include "low_level_cctv_daemon_apis.h"
 #include "camera.hpp"
@@ -32,4 +33,5 @@ void camera_daemon()
 	
 	syslog(log_facility | LOG_NOTICE, "The camera daemon has completed running.");
 }
+
 

@@ -161,9 +161,11 @@ void MainWindow::on_pushButton_clicked()
     qDebug() << position;
     QString arg;
     for(int i = position; i >= 0; i--){
-        arg.append(ui->dateEdit->date().addDays(-i).toString("ddMMyyyy") + " ");
+        arg.append(ui->dateEdit->date().addDays(-i).toString("dd.MM.yyyy") + ".out ");
     }
+    string utf8_text = arg.toUtf8().constData();
     qDebug() << arg;
+    cout << utf8_text;
 //    QPixmap img(imgPath);
 //    ui->label->setPixmap(img.scaled(ui->label->width(),ui->label->height(),Qt::KeepAspectRatio));
 }
