@@ -1,3 +1,18 @@
+/**
+ * File Name:  mainwindow.cpp
+ * Created By:  Wei Tao Li <>
+ * Created On:  
+ *
+ * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
+ * Modified On:  5/02/20
+ *
+ * Description:
+ * This file contains code that runs in the GUI process when the user clicks
+ * on various buttons, or when the GUI process itself reacts to internal events.
+ * This file contains the definitions of functions of the MainWindow class,
+ * as well as verious helper functions and global data structures.
+ */
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -71,6 +86,7 @@ void read_message(int)
     }
 }
 
+
 bool chkList(string str, int dayAmt) 
 {
 	// Append the user's input date
@@ -97,6 +113,7 @@ bool chkList(string str, int dayAmt)
 	}
 	return true;
 }
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)

@@ -3,8 +3,8 @@
  * Created By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
  * Created On:  3/03/20
  *
- * Modified By:  Svyatoslav Chukhlebov <slavikchukhlebov@mail.csuchico.edu>
- * Modified On:  4/29/20
+ * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
+ * Modified On:  5/02/20
  *
  * Description:
  * This function contains the definition of the camera_deamon() function,
@@ -30,13 +30,13 @@ extern vector<Camera*> cameras;
 
 void camera_daemon()
 {
-	syslog(log_facility | LOG_NOTICE, "The camera daemon has started running.");
+    syslog(log_facility | LOG_NOTICE, "The camera daemon has started running.");
 
-	Camera cam(1);
+    Camera cam(1);
     cameras.push_back(&cam);
-	cam.record();
+    cam.record();
 	
-	syslog(log_facility | LOG_NOTICE, "The camera daemon has completed running.");
+    syslog(log_facility | LOG_NOTICE, "The camera daemon has completed running.");
 
     terminate_daemon(0);
 }

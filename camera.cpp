@@ -3,7 +3,7 @@
  * Created By:  Svyatoslav Chukhlebov <slavikchukhlebov@mail.csuchico.edu>
  * Created On:  4/25/20
  *
- * Modified By:  KonstantinRebrov <krebrov@mail.csuchico.edu>
+ * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
  * Modified On:  5/02/20
  *
  * Description:
