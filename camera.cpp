@@ -44,7 +44,10 @@ int mkpath(const string& path, size_t start, mode_t mode)
         if (return_value == -1) {
             // if you couldn't create that directory because it already exists
             if (errno == EEXIST) {
-                return 0;
+                ++i;  // jump over the '/'
+                continue;
+                // This behavior is needed if the parent directory is already there,
+                // but the child directory still needs to be created.
             } else {
                 syslog(log_facility | LOG_ERR, "Failed to create %s : %s", directory.c_str(), error_message);
                 return return_value;
@@ -66,10 +69,6 @@ Camera::Camera(int cameraID)
     streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(cameraID) + "/";
     videoSaveDir = daemon_data.home_directory;
     videoSaveDir += "/SmartCCTV_recordings/camera" + std::to_string(cameraID) + "/";
-	
-    // TODO: remove these temporary lines
-    syslog(log_facility | LOG_NOTICE, "streamDir = %s", streamDir.c_str());
-    syslog(log_facility | LOG_NOTICE, "videoSaveDir = %s", videoSaveDir.c_str());
 
     if (mkpath(videoSaveDir, 17, S_IRWXU) == -1) {
         string message = "SmartCCTV could not create ";
