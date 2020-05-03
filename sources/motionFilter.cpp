@@ -1,5 +1,5 @@
 /**
- * File Name:  MotionFilter.hpp
+ * File Name:  MotionFilter.cpp
  * Created By:  Slavik Chukhlebov <schukhlebov@mail.csuchico.edu>
  * Created On:  2/29/20
  *
@@ -9,14 +9,10 @@
  * Description:
  *.Used for motion detection algorithms.
  */
+#include "motionFilter.hpp"
 
-class MotionFilter
+// DO NOT use new keyword in C++ as a variable name!
+Rect MotionFilter::detect(Mat old_one, Mat new_one)
 {
-public:
-   MotionFilter();
-   Rect detect(Mat old, Mat new);
-private:
-   Tracker tracker;
-   Mat newFrame, oldFrame;
-
+   
 }

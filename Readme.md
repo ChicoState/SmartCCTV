@@ -75,3 +75,13 @@ tk (tk85) (make)
 ```
 ### Getting started
 <High-level description of startup/teardown procedure>
+
+#### Installing the application from souce code:
+
+There are two steps
+
+```
+./bootstrap.sh
+make
+```
+

@@ -39,3 +39,8 @@ build
 
 # Charts folder
 Charts
+
+# log files
+logs
+*.log
+

@@ -1,7 +1,20 @@
+/**
+ * File Name:  mainwindow.h
+ * Created By:  Wei Tao Li <>
+ * Created On:  
+ *
+ * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
+ * Modified On:  5/03/20
+ *
+ * Description:
+ * This file contains the definition the MainWindow class.
+ * This is basically the class that handles all input and output from the GUI.
+ */
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "../high_level_cctv_daemon_apis.h"
+#include "high_level_cctv_daemon_apis.h"
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
