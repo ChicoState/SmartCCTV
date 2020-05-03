@@ -46,7 +46,7 @@ https://download.qt.io/official_releases/qt/5.14/5.14.1/
 
 You might need to install these packages before being able to run the app:
 sudo apt install qt5-qmake
-sudo apt install libqt4-dev
+sudo apt install libqt5-dev
 ```
 
 R
