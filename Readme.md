@@ -12,6 +12,10 @@ Deamon
 The daemon code itself has no dependencies since it's using low level Unix OS API.
 ``` 
 
+Live Stream Viewer
+```
+```
+
 OpenCV (Version 3.4.0)
 ```
 epel-release git gcc gcc-c++ cmake3 qt5-qtbase-devel python 
