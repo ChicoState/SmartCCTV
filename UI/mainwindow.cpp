@@ -8,6 +8,9 @@
 #include <signal.h>     /* for sigaction(), sigemptyset(), SIGCONT */
 #include <mqueue.h>     /* for mq_notify(), mq_receive(), mq_open(), mq_close(), mq_unlink() */
 #include <unistd.h>     /* for sleep() */
+#include <stdio.h>      /* for sprintf() */
+#include<iostream>      /* for is_open(), close(), ifstream */
+#include <fstream>      /* for is_open(), close(), ifstream */
 #include <QPixmap>
 #include <QtDebug>
 #include <QLabel>
@@ -68,6 +71,32 @@ void read_message(int)
     }
 }
 
+bool chkList(string str, int dayAmt) 
+{
+	// Append the user's input date
+	str += ".out";
+	
+	// Get correct starting day for iteration
+	int startDay = stoi((str.substr(0, 1)[0] == '0' ? str.substr(1, 1):str.substr(0, 2)));
+	for(int i = startDay; i <= startDay + dayAmt; i++) 
+	{
+		// Get current day
+		char buf[3];
+		sprintf (buf, "%02d", i);
+		
+		// Get complete filename using buf and user input
+		string cFName = string(buf) + str.substr(2, 12);
+		
+		// Check that file is reachable and readable before closing
+		ifstream curFile(cFName);
+		if(!curFile.is_open()) 
+		{
+			return false;
+		}
+		curFile.close();
+	}
+	return true;
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -148,9 +177,11 @@ void MainWindow::on_pushButton_clicked()
     qDebug() << position;
     QString arg;
     for(int i = position; i >= 0; i--){
-        arg.append(ui->dateEdit->date().addDays(-i).toString("ddMMyyyy") + " ");
+        arg.append(ui->dateEdit->date().addDays(-i).toString("dd.MM.yyyy") + ".out ");
     }
+    string utf8_text = arg.toUtf8().constData();
     qDebug() << arg;
+    cout << utf8_text;
 //    QPixmap img(imgPath);
 //    ui->label->setPixmap(img.scaled(ui->label->width(),ui->label->height(),Qt::KeepAspectRatio));
 }
