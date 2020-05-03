@@ -4,7 +4,7 @@
  * Created On:  2/27/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  4/29/20
+ * Modified On:  5/02/20
  *
  * Description:
  * This file contains definitions of functions of the SmartCCTV Daemon's internal API.
@@ -14,6 +14,7 @@
 #include "low_level_cctv_daemon_apis.h"
 #include "camera_daemon.h"
 #include "write_message.h"
+#include "camera.hpp"
 
 #include <sys/types.h>
 #include <sys/stat.h>   /* for umask(), mode permissions constants */
@@ -25,6 +26,9 @@
 #include <cstdlib>      /* for exit(), atexit(), EXIT_SUCCESS, EXIT_FAILURE */
 #include <cstdio>       /* for fclose(), fprintf() */
 #include <cstring>      /* for strerror() */
+#include <vector>       /* for std::vector */
+
+using std::vector;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
@@ -45,6 +49,11 @@ volatile Daemon_data daemon_data = {
     .home_directory = nullptr,                     // The path to the home directory, $HOME.
     .daemon_exit_status = EXIT_SUCCESS  // The exit status of the daemon, to use in terminate_daemon(), assumed EXIT_SUCCESS.
 };
+
+
+// When a Camera is created, it is added to the list.
+// When the daemon is terminated, it calls all the finalize() method of all the Cameras.
+vector<Camera*> cameras;
 
 
 void becomeDaemon()
@@ -151,6 +160,10 @@ void becomeDaemon()
 
 void terminate_daemon(int)
 {
+    for (Camera* camera : cameras) {
+        camera->finalize();
+    }
+
     if (close(daemon_data.pid_file_descriptor) == -1) {
         syslog(log_facility | LOG_ERR, "Error: could not close the PID file.");
     }

@@ -3,57 +3,139 @@
  * Created By:  Svyatoslav Chukhlebov <slavikchukhlebov@mail.csuchico.edu>
  * Created On:  4/25/20
  *
- * Modified By:  Svyatoslav Chukhlebov <slavikchukhlebov@mail.csuchico.edu>
- * Modified On:  4/29/20
+ * Modified By:  KonstantinRebrov <krebrov@mail.csuchico.edu>
+ * Modified On:  5/02/20
  *
  * Description:
  * This class is used to run image recogntition on a Mat object, searching for humans in the frame.
  * Each instance of this class is to correspond to a single camera or video file.
  */
 
-#include <opencv2/imgcodecs.hpp>
-#include <syslog.h>  /* for syslog() */
+#include "low_level_cctv_daemon_apis.h"
+#include "write_message.h"
 #include "camera.hpp"
+#include <opencv2/imgcodecs.hpp>
+#include <sys/stat.h>   /* for mkdir() */
+#include <sys/types.h>  /* for permissions constatnts */
+#include <syslog.h>     /* for syslog() */
+#include <string>       /* for std::string, std::to_string() */
+#include <cstring>      /* for strerror() */
+#include <errno.h>      /* for errno */
 
-#define log_facility LOG_LOCAL0
+using std::string;
+using std::to_string;
+
+
+extern Daemon_data daemon_data;
+
+int mkpath(const string& path, size_t start, mode_t mode)
+{
+    size_t path_length = path.length();
+
+    size_t i = start;
+    while (i < path_length) {
+        // get to the next directory
+        while (path[i] != '/')
+            ++i;
+
+        string directory = path.substr(0, i);
+        int return_value = mkdir(directory.c_str(), mode);
+        const char* const error_message = strerror(errno);
+        if (return_value == -1) {
+            // if you couldn't create that directory because it already exists
+            if (errno == EEXIST) {
+                return 0;
+            } else {
+                syslog(log_facility | LOG_ERR, "Failed to create %s : %s", directory.c_str(), error_message);
+                return return_value;
+            }
+        }
+
+        ++i;  // jump over the '/'
+    }
+
+    return 0;
+}
+
 
 Camera::Camera(int cameraID)
 {
-	syslog(log_facility | LOG_NOTICE, "Creating camera");
-	this->cameraID = cameraID; 
-	readFilePath = "";
-    recording = false;
-    streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace the string literal address with daemon_data.home_directory
-	videoSaveDir = "/home/slavik/SmartCCTV/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace with "daemon_data.home_directory"
-	//std::cout << "Prepared to open camera." << std::endl;
-	
-	cap.open(cameraID);
-	if (!cap.isOpened())
-    	{
-		//daemon_data.daemon_exit_status = EXIT_FAILURE;
-		//terminate_daemon(0);
-		syslog(log_facility | LOG_NOTICE, "Failed to open camera");
+    this->cameraID = cameraID; 
 
-		return; //Placeholder
-    	}
+    recording = false;
+    streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(cameraID) + "/";
+    videoSaveDir = daemon_data.home_directory;
+    videoSaveDir += "/SmartCCTV_recordings/camera" + std::to_string(cameraID) + "/";
+	
+    // TODO: remove these temporary lines
+    syslog(log_facility | LOG_NOTICE, "streamDir = %s", streamDir.c_str());
+    syslog(log_facility | LOG_NOTICE, "videoSaveDir = %s", videoSaveDir.c_str());
+
+    if (mkpath(videoSaveDir, 17, S_IRWXU) == -1) {
+        string message = "SmartCCTV could not create ";
+        message += videoSaveDir;
+        write_message(message);
+
+        daemon_data.daemon_exit_status = EXIT_FAILURE;
+        terminate_daemon(0);
+    } else {
+        syslog(log_facility | LOG_NOTICE, "Creating %s", videoSaveDir.c_str());
+    }
+
+    if (mkpath(streamDir, 5, S_IRWXU) == -1) {
+        string message = "SmartCCTV could not create the live stream.";
+        write_message(message);
+
+        daemon_data.daemon_exit_status = EXIT_FAILURE;
+        terminate_daemon(0);
+    } else {
+        syslog(log_facility | LOG_NOTICE, "Creating %s", streamDir.c_str());
+    }
+	
+    cap.open(cameraID);
+    if (!cap.isOpened())
+   	{
+        string message = "SmartCCTV failed to open camera";
+        message += to_string(cameraID);
+        write_message(message);
+
+        syslog(log_facility | LOG_ERR, "Failed to open camera%d", cameraID);
+
+        daemon_data.daemon_exit_status = EXIT_FAILURE;
+        terminate_daemon(0);
+    } else {
+        syslog(log_facility | LOG_NOTICE, "Creating camera%d", cameraID);
+    }
 }
+
 
 Camera::Camera(std::string readFilePath)
 {
-	this->readFilePath = readFilePath; 
-	cameraID = -1;
-    	recording = false;
-    	streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace the string literal address with daemon_data.home_directory
-    	videoSaveDir = "/home/slavik/SmartCCTV/camera" + std::to_string(cameraID) + "/"; //Placeholder- replace with "daemon_data.home_directory"
+    this->readFilePath = readFilePath; 
+
+    cameraID = -1;
+    recording = false;
+
+    streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(cameraID) + "/";
+    videoSaveDir = daemon_data.home_directory;
+    videoSaveDir += "/camera" + std::to_string(cameraID) + "/";
     
-    	cap.open(readFilePath);
-	if (!cap.isOpened())
-    	{
-		//daemon_data.daemon_exit_status = EXIT_FAILURE;
-		//terminate_daemon(0);
-		return;//Placeholder
-    	}
+    cap.open(readFilePath);
+    if (!cap.isOpened())
+    {
+        string message = "SmartCCTV failed to open ";
+        message += readFilePath;
+        write_message(message);
+
+        syslog(log_facility | LOG_ERR, "Failed to open media file %s", readFilePath.c_str());
+
+        daemon_data.daemon_exit_status = EXIT_FAILURE;
+        terminate_daemon(0);
+    } else {
+        syslog(log_facility | LOG_NOTICE, "Opening media file %s", readFilePath.c_str());
+    }
 }
+
 
 void Camera::clearExpiredFrames()
 {
@@ -80,12 +162,14 @@ void Camera::clearExpiredFrames()
 	}
 }
 
+
 void Camera::saveToStream(cv::Mat frame, int x)
 {
 	std::string imageFileName = streamDir + std::to_string(x) + ".bmp";
 	//std::cout << "Saving frame to stream as " << imageFileName << std::endl;
 	imwrite(imageFileName, frame);
 }
+
 
 void Camera::saveFrameToBuffer(cv::Mat frame)
 {
@@ -96,16 +180,19 @@ void Camera::saveFrameToBuffer(cv::Mat frame)
 	//std::cout << "Saving frame to buffer. Buffer at " << frameBackCapture.size() << std::endl;
 }
 
+
 void Camera::saveVideo()
 {
 	if(frameBackCapture.size() < 1)
 	{
 		//Trying to write an empty video, this is an error state
-		std::cout << "Error: Attempted to save empty video" << std::endl;
-		syslog(log_facility | LOG_NOTICE, "Error: Attempting to save empty video");
-		exit (EXIT_FAILURE); //Placeholder- Replace with the following:
-		//daemon_data.daemon_exit_status = EXIT_FAILURE;
-		//terminate_daemon(0);
+
+        string message = "SmartCCTV: something has gone wrong with saving the video.";
+        write_message(message);
+
+		//std::cout << "Error: Attempted to save empty video" << std::endl;
+		syslog(log_facility | LOG_ERR, "Error: Attempting to save empty video");
+        return;
 	}
 	
 	auto point = std::chrono::high_resolution_clock::now();
@@ -122,10 +209,11 @@ void Camera::saveVideo()
 		video.write(frameBackCapture[i].frame);
 	}
 	
-	syslog(log_facility | LOG_NOTICE, "Saved a video");
+	syslog(log_facility | LOG_NOTICE, "Saved a video %s", fullVideoString.c_str());
 	//std::cout << "Saved " << fullVideoString << std::endl;
 	frameBackCapture.clear();
 }
+
 
 void Camera::checkRecordingLength()
 {
@@ -138,6 +226,14 @@ void Camera::checkRecordingLength()
 		saveVideo();
 	}
 }
+
+
+void Camera::finalize()
+{
+    cap.release();
+	cv::destroyAllWindows();
+}
+
 
 void Camera::record()
 {
@@ -155,9 +251,14 @@ void Camera::record()
 		cap >> frame;
 		if(frame.empty())
 		{
-			syslog(log_facility | LOG_NOTICE, "Error: Corrupt frame on camera.");
+            string message = "SmartCCTV encountered an error.";
+            write_message(message);
+
+			syslog(log_facility | LOG_ERR, "Error: Corrupt frame on camera.");
 			//std::cout << "Error: Corrupt frame on camera " << cameraID << std::endl;
-			return;
+
+			daemon_data.daemon_exit_status = EXIT_FAILURE;
+    	    terminate_daemon(0);
 		}
 		
 		syslog(log_facility | LOG_NOTICE, "Running Human Recognition.");
@@ -203,10 +304,11 @@ void Camera::record()
 		
 		saveFrameToBuffer(frame);
 		x++;
-		syslog(log_facility | LOG_NOTICE, "Through the loop...");
+		//syslog(log_facility | LOG_NOTICE, "Through the loop...");
 
 	}
 	
 	cap.release();
 	cv::destroyAllWindows();
 }
+

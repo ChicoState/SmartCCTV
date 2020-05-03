@@ -37,6 +37,7 @@ class Camera
 	Camera(int cameraID);
 	Camera(std::string filePath);
 	void record();
+    void finalize();
 	
 	private:
 	int cameraID;
@@ -55,6 +56,6 @@ class Camera
 	HumanFilter humanFilter;
 	//FaceFilter faceFilter;
 	//MotionFilter motionFilter;
-	const bool debug = true;
+	const bool debug = false;
 };
 #endif

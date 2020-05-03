@@ -19,17 +19,24 @@
 #include "write_message.h"
 #include <syslog.h>  /* for syslog() */
 #include <unistd.h>  /* for sleep() */
+#include <vector>    /* for std::vector */
+
+using std::vector;
 
 
 extern Daemon_data daemon_data;
+extern vector<Camera*> cameras;
 
 void camera_daemon()
 {
 	syslog(log_facility | LOG_NOTICE, "The camera daemon has started running.");
 
-	Camera cam(0);
+	Camera cam(1);
+    cameras.push_back(&cam);
 	cam.record();
 	
 	syslog(log_facility | LOG_NOTICE, "The camera daemon has completed running.");
+
+    terminate_daemon(0);
 }
 

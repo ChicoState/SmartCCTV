@@ -37,7 +37,7 @@ CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES) -std=c++17 -g
 # This is the path to the #includes header files of Qt.
 # Change this according to the makefile generated when you run qmake.
 # When you run qmake it will generate a Makefile. Copy and paste the INCPATH from that, replacing this line.
-INCPATH       = -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4 -I. -I.
+INCPATH       = -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64
 
 LINK          = g++ `pkg-config --cflags --libs opencv`
 LFLAGS        = -Wl,-O1
@@ -46,7 +46,7 @@ LFLAGS        = -Wl,-O1
 # These are the installed libraries of Qt.
 # Change this according to the makefile generated when you run qmake.
 # When you run qmake it will generate a Makefile. Copy and paste the LIBS from that, replacing this line.
-LIBS          = $(SUBLIBS) -L/usr/lib/x86_64-linux-gnu -lQtGui -lQtCore -lGL
+LIBS          = $(SUBLIBS) -L/usr/X11R6/lib64 -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread
 
 ALL_LIBS      = $(LIBS) -lpthread -lrt `pkg-config opencv --cflags --libs`
 
@@ -134,9 +134,15 @@ all: Makefile $(TARGET)
 # Change this according to the makefile generated when you run qmake.
 # When you run qmake it will generate a Makefile. Copy and paste the dist from that, replacing these lines.
 
-dist: 
-	@$(CHK_DIR_EXISTS) .tmp/SmartCCTV_UI1.0.0 || $(MKDIR) .tmp/SmartCCTV_UI1.0.0 
-	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/SmartCCTV_UI1.0.0/ && $(COPY_FILE) --parents ../camera_daemon.h ../high_level_cctv_daemon_apis.h ../low_level_cctv_daemon_apis.h mainwindow.h .tmp/SmartCCTV_UI1.0.0/ && $(COPY_FILE) --parents ../camera_daemon.cpp ../high_level_cctv_daemon_apis.cpp ../low_level_cctv_daemon_apis.cpp main.cpp mainwindow.cpp .tmp/SmartCCTV_UI1.0.0/ && $(COPY_FILE) --parents mainwindow.ui .tmp/SmartCCTV_UI1.0.0/ && (cd `dirname .tmp/SmartCCTV_UI1.0.0` && $(TAR) SmartCCTV_UI1.0.0.tar SmartCCTV_UI1.0.0 && $(COMPRESS) SmartCCTV_UI1.0.0.tar) && $(MOVE) `dirname .tmp/SmartCCTV_UI1.0.0`/SmartCCTV_UI1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/SmartCCTV_UI1.0.0
+dist: distdir FORCE
+	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
+
+distdir: FORCE
+	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
+	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
+	$(COPY_FILE) --parents ../camera_daemon.h ../high_level_cctv_daemon_apis.h ../low_level_cctv_daemon_apis.h mainwindow.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../camera_daemon.cpp ../high_level_cctv_daemon_apis.cpp ../low_level_cctv_daemon_apis.cpp main.cpp mainwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents mainwindow.ui $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -152,35 +158,28 @@ clean: compiler_clean
 # When you run qmake it will generate a Makefile.
 # Copy and paste the entire Sub-libraries section, replacing everything until the Compile section.
 
-distclean: clean
-	-$(DEL_FILE) $(TARGET) 
-	-$(DEL_FILE) Makefile
-
-
-check: first
-
 mocclean: compiler_moc_header_clean compiler_moc_source_clean
 
 mocables: compiler_moc_header_make_all compiler_moc_source_make_all
 
-compiler_moc_header_make_all: moc_mainwindow.cpp
-compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp
-moc_mainwindow.cpp: mainwindow.h
-	/usr/lib/x86_64-linux-gnu/qt4/bin/moc $(DEFINES) $(INCPATH) mainwindow.h -o moc_mainwindow.cpp
+check: first
 
 compiler_rcc_make_all:
 compiler_rcc_clean:
-compiler_image_collection_make_all: qmake_image_collection.cpp
-compiler_image_collection_clean:
-	-$(DEL_FILE) qmake_image_collection.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp
+compiler_moc_header_clean:
+	-$(DEL_FILE) moc_mainwindow.cpp
+moc_mainwindow.cpp: ../high_level_cctv_daemon_apis.h \
+		mainwindow.h
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/konstantin/Documents/programming/SmartCCTV/UI -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
+
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
 compiler_uic_make_all: ui_mainwindow.h
 compiler_uic_clean:
 	-$(DEL_FILE) ui_mainwindow.h
 ui_mainwindow.h: mainwindow.ui
-	/usr/lib/x86_64-linux-gnu/qt4/bin/uic mainwindow.ui -o ui_mainwindow.h
+	/usr/lib/x86_64-linux-gnu/qt5/bin/uic mainwindow.ui -o ui_mainwindow.h
 
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
@@ -204,8 +203,9 @@ high_level_cctv_daemon_apis.o: ../high_level_cctv_daemon_apis.cpp ../high_level_
 
 low_level_cctv_daemon_apis.o: ../low_level_cctv_daemon_apis.cpp ../low_level_cctv_daemon_apis.h \
 		../camera_daemon.h \
-		../write_message.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o low_level_cctv_daemon_apis.o ../low_level_cctv_daemon_apis.cpp
+		../write_message.h \
+		../camera.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) `pkg-config --cflags --libs opencv` -static-libstdc++ -o low_level_cctv_daemon_apis.o ../low_level_cctv_daemon_apis.cpp
 
 
 main.o: main.cpp mainwindow.h
@@ -222,7 +222,8 @@ moc_mainwindow.o: moc_mainwindow.cpp
 camera_daemon.o: ../camera_daemon.cpp ../camera_daemon.h \
 	../camera.hpp \
 	../humanFilter.hpp \
-	../low_level_cctv_daemon_apis.h
+	../low_level_cctv_daemon_apis.h \
+	../write_message.h
 	g++ -c -std=c++17 -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ ../camera_daemon.cpp ../camera_daemon.h ../camera.cpp ../low_level_cctv_daemon_apis.h ../humanFilter.cpp 
 
 	

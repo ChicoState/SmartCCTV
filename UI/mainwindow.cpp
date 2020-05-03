@@ -4,7 +4,7 @@
 #include <string>       /* for std::string */
 #include <syslog.h>     /* for openlog(), syslog(), closelog() */
 #include <cstdlib>      /* for getenv(), atexit(), exit(), EXIT_FAILURE */
-#include <cstring>      /* for memset() */
+#include <cstring>      /* for memset(), strcmp(), strncmp() */
 #include <signal.h>     /* for sigaction(), sigemptyset(), SIGCONT */
 #include <mqueue.h>     /* for mq_notify(), mq_receive(), mq_open(), mq_close(), mq_unlink() */
 #include <unistd.h>     /* for sleep() */
@@ -17,6 +17,7 @@ using namespace std;
 mqd_t message_handler;  // message queue file descriptor
 string message_handler_name = "/SmartCCTV_Message_handler";
 QLabel* message_label = nullptr;
+QLabel* daemon_label = nullptr;
 
 
 void close_message_handler()
@@ -49,6 +50,20 @@ void read_message(int)
             message_label->setText(message);
         }
 
+        if (strcmp("SmartCCTV encountered an error.", message) == 0) {
+            if (daemon_label != nullptr) {
+                daemon_label->setText("SmartCCTV have stopped running.");
+            }
+        } else if (strncmp("SmartCCTV failed to open ", message, 25) == 0) {
+            if (daemon_label != nullptr) {
+                daemon_label->setText("SmartCCTV have stopped running.");
+            }
+        } else if (strncmp("SmartCCTV could not create ", message, 27) == 0) {
+            if (daemon_label != nullptr) {
+                daemon_label->setText("Can not run SmartCCTV due to permission error.");
+            }
+        }
+
         memset(message, 0, 121);  // zero out the buffer
     }
 }
@@ -72,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Set the QLabel to display the message that the daemon sends it.
     message_label = ui->label_3;
+    daemon_label = ui->daemon_label;
 
     // Setup the message handler to recieve error messages from the daemon and dispaly them onto the GUI.
     // Make sure we can handle the SIGCONT message when the message queue notification sens the signal.
