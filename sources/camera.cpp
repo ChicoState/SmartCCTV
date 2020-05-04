@@ -229,7 +229,11 @@ void Camera::checkRecordingLength()
 
 void Camera::finalize()
 {
-    cap.release();
+	if(recording)
+	{
+		saveVideo();	
+	}
+    	cap.release();
 	cv::destroyAllWindows();
 }
 
