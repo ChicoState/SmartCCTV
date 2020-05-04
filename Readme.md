@@ -1,4 +1,4 @@
-# Smart CCTV Team Project <br> [![Build Status](https://travis-ci.org/ChicoState/UnitTestPractice.svg?branch=master)](https://travis-ci.org/ChicoState/SmartCCTV.svg?branch=master)
+# Smart CCTV Team Project <br> [![Build Status](https://travis-ci.org/ChicoState/SmartCCTV.svg?branch=master)](https://travis-ci.org/ChicoState/SmartCCTV.svg?branch=master)
 
 </br>
 
