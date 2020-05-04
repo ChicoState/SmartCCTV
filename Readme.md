@@ -81,7 +81,7 @@ tk (tk85) (make)
 There are two steps
 
 ```
-./bootstrap.sh  # This creates a Makefile custom tailored to your system.
+./scripts/bootstrap.sh  # This creates a Makefile custom tailored to your system.
 make            # This builds the application.
 ```
 
