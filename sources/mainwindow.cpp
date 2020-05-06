@@ -211,9 +211,20 @@ void MainWindow::on_pushButton_Run_clicked()
         message_label->setText("");
     }
 
+    //This will return boolean value which option is selected.
+    bool outline = ui->checkBox->isChecked();
+    bool human_det = ui->checkBox->isChecked();
+    bool motion_det = ui->checkBox->isChecked();
+
     int daemon = daemon_facade.run_daemon();
     if(daemon == 0){
         ui->daemon_label->setText("SmartCCTV is now running.");
+        //outline checkbox
+        ui->checkBox->setEnabled(false);
+        //human detection checkbox
+        ui->checkBox_2->setEnabled(false);
+        //motion detection checkbox
+        ui->checkBox_3->setEnabled(false);
     }
     else if(daemon == 1){
         ui->daemon_label->setText("SmartCCTV is already running.");
@@ -237,6 +248,12 @@ void MainWindow::on_pushButton_Kill_clicked()
     }
     else{
         ui->daemon_label->setText("SmartCCTV have stopped running.");
+        //outline checkbox
+        ui->checkBox->setEnabled(true);
+        //human detection checkbox
+        ui->checkBox_2->setEnabled(true);
+        //motion detection checkbox
+        ui->checkBox_3->setEnabled(true);
     }
 }
 
