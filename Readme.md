@@ -7,14 +7,6 @@ Our product will be a replacement for traditional CCTV software that uses image 
 
 ## Installing ##
 ### Prerequisites
-Deamon
-```
-The daemon code itself has no dependencies since it's using low level Unix OS API.
-``` 
-
-Live Stream Viewer
-```
-```
 
 OpenCV (Version 3.4.0)
 ```
@@ -25,7 +17,7 @@ libwebp-devel libjpeg-turbo-devel libtiff-devel libdc1394-devel tbb-devel
 numpy eigen3-devel gstreamer-plugins-base-devel freeglut-devel mesa-libGL 
 mesa-libGL-devel boost boost-thread boost-devel libv4l-devel
 
-Default installation instructions here should work:
+Default installation instructions:
 https://www.learnopencv.com/install-opencv3-on-ubuntu/
 
 Test your installation by compiling and running an OpenCV sample:
@@ -34,19 +26,17 @@ pkg-config --cflags --libs opencv
 g++ -ggdb facedetect.cpp -o facedetect `pkg-config --cflags --libs opencv`
 ./facedetect
 
-You may need to fix a linking error when running the OpenCVcode. This should do it:
+You may need to fix a linking error when running the OpenCVcode:
 sudo sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf' 
 sudo ldconfig
 ``` 
 
-QT Creator (Version 4.11.1)
+QT (Version 5.14.1)
 ```
 Based on Qt 5.14.1 (GCC 5.3.1 20160406 (Red Hat 5.3.1-6), 64 bit)
 https://download.qt.io/official_releases/qt/5.14/5.14.1/
-
-You might need to install these packages before being able to run the app:
-sudo apt install qt5-qmake
-sudo apt install libqt5-dev
+qt5-qmake
+libqt5-dev
 ```
 
 R
@@ -74,14 +64,14 @@ gcc-fortran (gcc-fortran-multilib-x32, gcc-fortran-git, gcc-fortran-multilib-git
 tk (tk85) (make)
 ```
 ### Getting started
-<High-level description of startup/teardown procedure>
 
 #### Installing the application from souce code:
 
-There are two steps
+There are two steps, first to initalize the Makefile and then use the bootstrap script</br>
+to swap out the nessecary lines into the Makefile.
 
 ```
-./scripts/bootstrap.sh  # This creates a Makefile custom tailored to your system.
-make            # This builds the application.
+make
+./scripts/bootstrap.sh
 ```
 
