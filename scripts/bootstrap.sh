@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Create a skeleton backup
+cp ./../Makefile_skeleton ./../Makefile_skeleton_backup
+
 # Grep the info that's in the generated Makefile 
 # and store it into variables
 e=$(cat ./../Makefile | grep "INCPATH       = ")
