@@ -64,6 +64,12 @@ zlib (zlib-static, zlib-git, zlib-asm, zlib-ng-git)
 gcc-fortran (gcc-fortran-multilib-x32, gcc-fortran-git, gcc-fortran-multilib-git) (make)
 tk (tk85) (make)
 ```
+
+`remove` command (used in `bootstrap.sh`)
+```
+mysql-server-5.7
+```
+
 ### Getting started
 
 #### Installing the application from souce code:
