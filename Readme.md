@@ -40,6 +40,16 @@ qt5-qmake
 libqt5-dev
 ```
 
+SDL2
+```
+libsdl2-2.0-0
+libsdl2-dbg
+libsdl2-dev
+libsdl2-image-2.0-0
+libsdl2-image-dbg
+libsdl2-image-dev
+```
+
 R
 ```
 blas (openblas-lapack-git, openblas-git, blas-tmg, flexiblas, blas-git, openblas-lapack-static, atlas-lapack, openblas-lapack, openblas-cblas-git, openblas)
