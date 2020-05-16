@@ -4,7 +4,7 @@
  * Created On:  
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/02/20
+ * Modified On:  5/16/20
  *
  * Description:
  * This file contains code that runs in the GUI process when the user clicks
@@ -29,6 +29,7 @@
 #include <QPixmap>
 #include <QtDebug>
 #include <QLabel>
+#include <QCheckBox>
 
 using namespace std;
 
@@ -36,6 +37,9 @@ mqd_t message_handler;  // message queue file descriptor
 string message_handler_name = "/SmartCCTV_Message_handler";
 QLabel* message_label = nullptr;
 QLabel* daemon_label = nullptr;
+QCheckBox* checkBox_1 = nullptr;
+QCheckBox* checkBox_2 = nullptr;
+QCheckBox* checkBox_3 = nullptr;
 
 
 void close_message_handler()
@@ -72,14 +76,32 @@ void read_message(int)
             if (daemon_label != nullptr) {
                 daemon_label->setText("SmartCCTV have stopped running.");
             }
+            //outline checkbox
+            checkBox_1->setEnabled(true);
+            //human detection checkbox
+            checkBox_2->setEnabled(true);
+            //motion detection checkbox
+            checkBox_3->setEnabled(true);
         } else if (strncmp("SmartCCTV failed to open ", message, 25) == 0) {
             if (daemon_label != nullptr) {
                 daemon_label->setText("SmartCCTV have stopped running.");
             }
+            //outline checkbox
+            checkBox_1->setEnabled(true);
+            //human detection checkbox
+            checkBox_2->setEnabled(true);
+            //motion detection checkbox
+            checkBox_3->setEnabled(true);
         } else if (strncmp("SmartCCTV could not create ", message, 27) == 0) {
             if (daemon_label != nullptr) {
                 daemon_label->setText("Can not run SmartCCTV due to permission error.");
             }
+            //outline checkbox
+            checkBox_1->setEnabled(true);
+            //human detection checkbox
+            checkBox_2->setEnabled(true);
+            //motion detection checkbox
+            checkBox_3->setEnabled(true);
         }
 
         memset(message, 0, 121);  // zero out the buffer
@@ -134,6 +156,11 @@ MainWindow::MainWindow(QWidget *parent)
     // Set the QLabel to display the message that the daemon sends it.
     message_label = ui->label_3;
     daemon_label = ui->daemon_label;
+
+    // Set the QCheckBox pointers.
+    checkBox_1 = ui->checkBox;
+    checkBox_2 = ui->checkBox_2;
+    checkBox_3 = ui->checkBox_3;
 
     // Setup the message handler to recieve error messages from the daemon and dispaly them onto the GUI.
     // Make sure we can handle the SIGCONT message when the message queue notification sens the signal.
@@ -216,7 +243,7 @@ void MainWindow::on_pushButton_Run_clicked()
     bool human_det = ui->checkBox->isChecked();
     bool motion_det = ui->checkBox->isChecked();
 
-    int daemon = daemon_facade.run_daemon();
+    int daemon = daemon_facade.run_daemon(human_det, motion_det, outline);
     if(daemon == 0){
         ui->daemon_label->setText("SmartCCTV is now running.");
         //outline checkbox
@@ -248,13 +275,14 @@ void MainWindow::on_pushButton_Kill_clicked()
     }
     else{
         ui->daemon_label->setText("SmartCCTV have stopped running.");
-        //outline checkbox
-        ui->checkBox->setEnabled(true);
-        //human detection checkbox
-        ui->checkBox_2->setEnabled(true);
-        //motion detection checkbox
-        ui->checkBox_3->setEnabled(true);
     }
+
+    //outline checkbox
+    ui->checkBox->setEnabled(true);
+    //human detection checkbox
+    ui->checkBox_2->setEnabled(true);
+    //motion detection checkbox
+    ui->checkBox_3->setEnabled(true);
 }
 
 

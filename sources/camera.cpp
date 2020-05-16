@@ -4,7 +4,7 @@
  * Created On:  4/25/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/02/20
+ * Modified On:  5/16/20
  *
  * Description:
  * This class is used to run image recogntition on a Mat object, searching for humans in the frame.
@@ -40,10 +40,11 @@ int mkpath(const string& path, size_t start, mode_t mode)
 
         string directory = path.substr(0, i);
         int return_value = mkdir(directory.c_str(), mode);
-        const char* const error_message = strerror(errno);
+        int error = errno;
+        const char* const error_message = strerror(error);
         if (return_value == -1) {
             // if you couldn't create that directory because it already exists
-            if (errno == EEXIST) {
+            if (error == EEXIST) {
                 ++i;  // jump over the '/'
                 continue;
                 // This behavior is needed if the parent directory is already there,
@@ -115,9 +116,30 @@ Camera::Camera(std::string readFilePath)
     cameraID = -1;
     recording = false;
 
-    streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(cameraID) + "/";
+    streamDir = "/tmp/SmartCCTV_livestream/camera" + std::to_string(0) + "/";
     videoSaveDir = daemon_data.home_directory;
-    videoSaveDir += "/camera" + std::to_string(cameraID) + "/";
+    videoSaveDir += "/SmartCCTV_recordings/camera" + std::to_string(0) + "/";
+
+    if (mkpath(videoSaveDir, 17, S_IRWXU) == -1) {
+        string message = "SmartCCTV could not create ";
+        message += videoSaveDir;
+        write_message(message);
+
+        daemon_data.daemon_exit_status = EXIT_FAILURE;
+        terminate_daemon(0);
+    } else {
+        syslog(log_facility | LOG_NOTICE, "Creating %s", videoSaveDir.c_str());
+    }
+
+    if (mkpath(streamDir, 5, S_IRWXU) == -1) {
+        string message = "SmartCCTV could not create the live stream.";
+        write_message(message);
+
+        daemon_data.daemon_exit_status = EXIT_FAILURE;
+        terminate_daemon(0);
+    } else {
+        syslog(log_facility | LOG_NOTICE, "Creating %s", streamDir.c_str());
+    }
     
     cap.open(readFilePath);
     if (!cap.isOpened())
@@ -257,7 +279,7 @@ void Camera::record()
             string message = "SmartCCTV encountered an error.";
             write_message(message);
 
-			syslog(log_facility | LOG_ERR, "Error: Corrupt frame on camera.");
+			syslog(log_facility | LOG_ERR, "Error: Corrupt frame on camera %d", cameraID);
 			//std::cout << "Error: Corrupt frame on camera " << cameraID << std::endl;
 
 			daemon_data.daemon_exit_status = EXIT_FAILURE;

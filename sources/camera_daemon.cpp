@@ -32,6 +32,10 @@ void camera_daemon()
 {
     syslog(log_facility | LOG_NOTICE, "The camera daemon has started running.");
 
+    syslog(log_facility | LOG_NOTICE, "enable human detection: %d", daemon_data.enable_human_detection);
+    syslog(log_facility | LOG_NOTICE, "enable motion detection: %d", daemon_data.enable_motion_detection);
+    syslog(log_facility | LOG_NOTICE, "enable outlines: %d", daemon_data.enable_outlines);
+
     Camera cam(1);
     cameras.push_back(&cam);
     cam.record();

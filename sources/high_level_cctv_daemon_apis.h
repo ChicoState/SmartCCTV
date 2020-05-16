@@ -4,7 +4,7 @@
  * Created On:  4/11/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  4/29/20
+ * Modified On:  5/16/20
  *
  * Description:
  * This file contains declarations of functions of the SmartCCTV Daemon's external API.
@@ -36,12 +36,18 @@ class Daemon_facade {
      *
      * This function is called only in the GUI process.
      *
+     * @param bool enable_human_detection - whether to enable human detection
+     *
+     * @param bool enable_motion_detection - whether to enable motion detection
+     *
+     * @param bool enable_outlines - whether to draw outlines
+     *
      * @return int - 0 if it succeeded running the daemon
      *               1 if it failed because the daemon was already running
      *               2 if it failed because you don't have permissions to run the daemon
      *                              (it failed to create and/or open the PID file)
      */
-    int run_daemon();
+    int run_daemon(bool enable_human_detection, bool enable_motion_detection, bool enable_outlines);
 
     /**
      * This function kills the daemon if it is already running.

@@ -4,7 +4,7 @@
  * Created On:  2/27/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/02/20
+ * Modified On:  5/16/20
  *
  * Description:
  * This file contains definitions of functions of the SmartCCTV Daemon's internal API.
@@ -42,11 +42,16 @@ using std::vector;
  * both the GUI process and the daemon process. So we want to disable cache optimizations.
  */
 volatile Daemon_data daemon_data = {
+    // Set the default values for the data members.
     .pid_file_name = "/tmp/SmartCCTV_daemon_pid",  // The path to the PID file.
     .pid_file_descriptor = 0,                      // A descriptor to this file.
     .pid_file_pointer = nullptr,                   // A pointer to this file.
     .camera_daemon_pid = 0,                        // The PID of the daemon.
     .home_directory = nullptr,                     // The path to the home directory, $HOME.
+    .enable_human_detection = true,                // whether to enable human detection
+    .enable_motion_detection = true,               // whether to enable motion detection
+    .enable_outlines = true,                       // whether to draw outlines
+    .is_live_stream_running = false,               // is live stream viewer process currently running
     .daemon_exit_status = EXIT_SUCCESS  // The exit status of the daemon, to use in terminate_daemon(), assumed EXIT_SUCCESS.
 };
 

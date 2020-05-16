@@ -4,7 +4,7 @@
  * Created On:  4/11/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  4/29/20
+ * Modified On:  5/16/20
  *
  * Description:
  * This file contains definitions of functions of the SmartCCTV Daemon's external API.
@@ -38,9 +38,16 @@ void Daemon_facade::set_daemon_info(const char* home_directory)
 }
 
 
-int Daemon_facade::run_daemon()
+int Daemon_facade::run_daemon(bool enable_human_detection, bool enable_motion_detection, bool enable_outlines)
 {
     // User has requested to start the SmartCCTV daemon.
+    daemon_data.enable_human_detection = enable_human_detection;
+    daemon_data.enable_motion_detection = enable_motion_detection;
+    daemon_data.enable_outlines = enable_outlines;
+    syslog(log_facility | LOG_NOTICE, "enable human detection: %d", daemon_data.enable_human_detection);
+    syslog(log_facility | LOG_NOTICE, "enable motion detection: %d", daemon_data.enable_motion_detection);
+    syslog(log_facility | LOG_NOTICE, "enable outlines: %d", daemon_data.enable_outlines);
+
 
     enum return_states { SUCCESS, DAEMON_ALREADY_RUNNING, PERMISSIONS_ERROR };
 
@@ -82,12 +89,13 @@ int Daemon_facade::run_daemon()
     }
 
     // After creating the PID file
-    // Close the PID file in the GUI process only.
-    // In the daemon process the PID file remains open.
+    // Close the PID file in the GUI process.
+    /*
     if (close(daemon_data.pid_file_descriptor) == -1) {
         syslog(log_facility | LOG_ERR, "Error: GUI process could not close PID file %s : %m", daemon_data.pid_file_name);
     }
     daemon_data.pid_file_pointer = nullptr;
+    */
 
     syslog(log_facility | LOG_NOTICE, "Starting SmartCCTV Daemon");
     return SUCCESS;

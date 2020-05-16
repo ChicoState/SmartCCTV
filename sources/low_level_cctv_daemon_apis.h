@@ -4,7 +4,7 @@
  * Created On:  2/27/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  4/29/20
+ * Modified On:  5/16/20
  *
  * Description:
  * This file contains declarations of functions of the SmartCCTV Daemon's internal API.
@@ -25,12 +25,16 @@
  * custom parameters.
  */
 struct Daemon_data {
-    const char* pid_file_name;   // The path to the PID file.
-    int pid_file_descriptor;     // A descriptor to this file.
-    FILE* pid_file_pointer;      // A pointer to this file.
-    int camera_daemon_pid;       // The PID of the daemon.
-    const char* home_directory;  // The path to the home directory, $HOME.
-    int daemon_exit_status;      // The exit status of the daemon, to use in terminate_daemon(), assumed EXIT_SUCCESS.
+    const char* pid_file_name;     // The path to the PID file.
+    int pid_file_descriptor;       // A descriptor to this file.
+    FILE* pid_file_pointer;        // A pointer to this file.
+    int camera_daemon_pid;         // The PID of the daemon.
+    const char* home_directory;    // The path to the home directory, $HOME.
+    bool enable_human_detection;   // whether to enable human detection
+    bool enable_motion_detection;  // whether to enable motion detection
+    bool enable_outlines;          // whether to draw outlines
+    bool is_live_stream_running;   // is live stream viewer process currently running
+    int daemon_exit_status;        // The exit status of the daemon, to use in terminate_daemon(), assumed EXIT_SUCCESS.
 };
 
 
