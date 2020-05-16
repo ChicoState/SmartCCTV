@@ -72,7 +72,7 @@ There are two steps, first to initalize the Makefile and then use the bootstrap 
 to swap out the nessecary lines into the Makefile.
 
 ```
-make
 ./scripts/bootstrap.sh
+make
 ```
 
