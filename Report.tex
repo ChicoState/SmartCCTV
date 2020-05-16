@@ -1,0 +1,58 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[latin1]{inputenc}
+
+\title{Final Report}
+\author{Smart CCTV}
+\date{Spring 2020}
+
+\begin{document}
+\maketitle
+\pagebreak
+
+\section*{Software Architecture}
+\pagebreak
+
+\section*{Component/Class Design}
+
+\pagebreak
+
+\section*{Function Design}
+\pagebreak
+
+\section*{Design Practices}
+\subsection*{Review Process}
+For our review process, we decided it'd be best to rely on our SCRUM meetings and heavily emphasize blockers to enable eachother to point out any solutions that we could see to them and better facilitate learning within the group.
+\\
+\\Through this method, we've been able to benefit from an enviroment where everyone shares a singular vision of the end product, which allowed for cohesion in the team.
+\\
+\\\subsection*{Anti-patterns}
+\\There are definately some parts of the code that are defined by anti-patterns. \\
+\\The most common offense is \textbf{"Lava-flow"}, where we end up planning past a feature or change our strategy and end up leaving 'dead code' in the project that was no longer serving any purpose.
+\\
+\\A good example of this is the folder we left in the repository specifically for the purpose of debugging, but never took out because nobody remembered why it was in there.
+\\
+\\Another issue we encountered \textbf{"Continuous Obsolescence"}, where more than a few times Qt, OpenCV, or even both updated and left our project to pick up the pieces of whatever broke during that update. 
+\pagebreak
+
+\section*{Automated Testing}
+\\\includegraphics[scale=0.3]{https://docs.travis-ci.com/images/TravisCI-Full-Color.png}
+\\
+\\
+While not perfect as of yet, our TravisCI is serving as an important reminder to us as to what issues the end-user could face as they install the product. 
+\\
+\\It's an especially important part that we've considered along the way, but haven't been able to make much headway with because of a ~10-minute build time. The biggest issue is that the two core components, QT and OpenCV, are relatively large and take an excessively long time to get onto TravisCI, which makes testing almost infeasible.
+\\
+\\
+\\\includegraphics[scale=0.5]{https://prdeving.files.wordpress.com/2017/03/google-c-testing-framework-gtesk-300x200.jpg?w=300}
+\\Although we haven't had the chance to implement this feature yet, we've discussed plans on how we'd roll out the testing framework for our project as we have done in class assignments. 
+\\
+\\We'd initially start with making sure that the camera class is covered before moving onto the daemon that runs everything, as it'd probably easier to make sure that it generates output correctly.
+\pagebreak
+
+\section*{Coverage}
+\pagebreak
+
+\end{document}
