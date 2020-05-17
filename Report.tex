@@ -24,22 +24,29 @@
 
 \section*{Design Practices}
 \subsection*{Review Process}
-For our review process, we decided it'd be best to rely on our SCRUM meetings and heavily emphasize blockers to enable eachother to point out any solutions that we could see to them and better facilitate learning within the group.
+For our review process, we decided it'd be best to rely on our SCRUM meetings, and heavily emphasize talking about blockers to enable peers to help each other find solutions.
 \\
-\\Through this method, we've been able to benefit from an enviroment where everyone shares a singular vision of the end product, which allowed for cohesion in the team.
-\\
-\\\subsection*{Anti-patterns}
-\\There are definately some parts of the code that are defined by anti-patterns. \\
+\\Through this method, we've been able to benefit from an enviroment where everyone shares a singular vision of the end product, which allowed for a high level cohesion in the team.
+\subsection*{Anti-patterns}
 \\The most common offense is \textbf{"Lava-flow"}, where we end up planning past a feature or change our strategy and end up leaving 'dead code' in the project that was no longer serving any purpose.
 \\
 \\A good example of this is the folder we left in the repository specifically for the purpose of debugging, but never took out because nobody remembered why it was in there.
+\\\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{https://i.imgur.com/58RieQw.png}
+    \caption{Random folder in repository}
+\end{figure}
 \\
-\\Another issue we encountered \textbf{"Continuous Obsolescence"}, where more than a few times Qt, OpenCV, or even both updated and left our project to pick up the pieces of whatever broke during that update. 
+\\Another issue we encountered \textbf{"Continuous Obsolescence"}, where more than a few times Qt, OpenCV, or even both updated and left our project to pick up the pieces of whatever broke during that update.
+\\\begin{figure}[width=0.25\textwidth]
+    \centering
+    \includegraphics[scale=0.25]{https://i.imgur.com/cXNE76q.png}
+    \caption{Update on April 6th breaking OpenCV code}
+\end{figure}
 \pagebreak
 
 \section*{Automated Testing}
 \\\includegraphics[scale=0.3]{https://docs.travis-ci.com/images/TravisCI-Full-Color.png}
-\\
 \\
 While not perfect as of yet, our TravisCI is serving as an important reminder to us as to what issues the end-user could face as they install the product. 
 \\
