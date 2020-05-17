@@ -60,6 +60,23 @@ While not perfect as of yet, our TravisCI is serving as an important reminder to
 \pagebreak
 
 \section*{Coverage}
+Unfortunately, due the \textbf{extreme} nature of our build requiring both Qt and OpenCV, we could not feasibly instantiate any form of reliable code coverage.\\
+\\
+That's to say nothing of the fact that a large portion of our code is run as background processes or as UI, meaning that we're unable to be actually test anything bar killing the process.
+\\\begin{figure}[width=0.25\textwidth]
+    \centering
+    \includegraphics[scale=0.5]{https://i.imgur.com/UJPKVSY.png}
+    \caption{Real build-time exceedes 30 minutes}
+\end{figure}
+\\
+\\Apart from compiling, our coverage mainly was planned to consist of basic tests such as,
+\begin{itemize}
+  \item Did the OpenCv and Qt install correctly from a clean OS?
+  \item Did the UI correctly kill/start the processes it interacts with?
+  \item Was the program able to access the camera, even if it was a psuedo-camera displayed only for the test?
+  \item Was there any permission errors with accessing any logging features or misc. issues?
+\end{itemize}
 \pagebreak
+
 
 \end{document}
