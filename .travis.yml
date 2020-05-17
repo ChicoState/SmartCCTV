@@ -31,7 +31,5 @@ install:
 
 script:
   - qmake SmartCCTV_UI.pro
-  - cd scripts
-  - ./bootstrap.sh
-  - cd ../
+  - ./scripts/bootstrap.sh
   - make
