@@ -1,3 +1,22 @@
+/**
+ * File Name:   livestream_facade.h
+ * Created By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
+ * Created On:  5/16/20
+ *
+ * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
+ * Modified On:  5/17/20
+ *
+ * Description:
+ * This file contains the definitions of member methods LiveStream_facade, as well as it's helper functions.
+ * The helper functions are primarily signal handlers and other functions that are caled by the signal
+ * handlers, since such functions cannot be member methods of a class.
+ * LiveStream_facade is an implementation of both the facade and singleton design patterns.
+ *
+ * This file also contains the liveStream_viewer_data object, which is just the private data of the
+ * singleton LiveStream_facade class, just it is moved into the global scope in order to allow signal handlers
+ * access to it.
+ */
+
 #include "livestream_facade.h"
 #include "livestream_window.h"
 #include "write_message.h"
@@ -45,58 +64,6 @@ struct LiveStream_viewer_data {
     .daemon_process_pid = 0,                           // The PID of the SmartCCTV camera daemon.
     .SmartCCTV_daemon_is_running = false               // Is the daemon proces running or not?
 };
-
-
-void terminate_livestream(int)
-{
-    if (liveStream_window_ptr != nullptr) {
-        liveStream_window_ptr->finalize();
-    }
-
-    //  Tell the daemon that the LiveStream Viewer is shutting down, so it should stop saving images
-    // into that direcotry.
-    if (liveStream_viewer_data.daemon_process_pid) {
-        syslog(log_facility | LOG_WARNING, "sending signal to %d", liveStream_viewer_data.daemon_process_pid);
-        kill(liveStream_viewer_data.daemon_process_pid, SIGUSR2);
-    }
-
-    if (close(liveStream_viewer_data.pid_file_descriptor) == -1) {
-        syslog(log_facility | LOG_ERR, "Error: could not close the PID file.");
-    }
-
-    if (unlink(liveStream_viewer_data.my_pid_file_name) == -1) {
-        syslog(log_facility | LOG_ERR, "Error: Could not unlink PID file %s : %m", liveStream_viewer_data.my_pid_file_name);
-        syslog(log_facility | LOG_WARNING, "System Admin please take a look at this.");
-    } else {
-        syslog(log_facility | LOG_NOTICE, "Removed the PID file successfully.");
-    }
-
-    syslog(log_facility | LOG_NOTICE, "The LiveStream Viewer is turning off.");
-
-    exit(exit_code);
-}
-
-
-void camera_daemon_starts_up(int)
-{
-    syslog(log_facility | LOG_NOTICE, "camera_daemon_starts_up()");
-    int daemon_pid = get_daemon_pid();
-    liveStream_viewer_data.daemon_process_pid = (daemon_pid != -1) ? daemon_pid : 0;
-    // The SmartCCTV camera daemon already knows that the LiveStream Viewer process is up and running.
-
-    // Check the LiveStream Viewer can:
-    // - get the daemon's PID to send it signals
-    // - find the camera directory to open images
-    liveStream_viewer_data.SmartCCTV_daemon_is_running = liveStream_viewer_data.daemon_process_pid && find_camera_directory();
-    liveStream_window_ptr->set_streamDir(liveStream_viewer_data.streamDir);
-}
-
-
-void camera_daemon_shuts_down(int)
-{
-    syslog(log_facility | LOG_NOTICE, "camera_daemon_shuts_down()");
-    liveStream_viewer_data.SmartCCTV_daemon_is_running = false;
-}
 
 
 // The constructor is run in the GUI process.
@@ -348,10 +315,60 @@ void LiveStream_facade::open_viewer_window()
 
     liveStream_window.open();
 
-    while (true) {
-        syslog(log_facility | LOG_NOTICE, "LiveStream Viewer is up and running.");
-        sleep(5);
+    exit_code = EXIT_SUCCESS;
+    terminate_livestream(0);
+}
+
+
+void terminate_livestream(int)
+{
+    if (liveStream_window_ptr != nullptr) {
+        liveStream_window_ptr->finalize();
     }
+
+    //  Tell the daemon that the LiveStream Viewer is shutting down, so it should stop saving images
+    // into that direcotry.
+    if (liveStream_viewer_data.daemon_process_pid) {
+        syslog(log_facility | LOG_WARNING, "sending signal to %d", liveStream_viewer_data.daemon_process_pid);
+        kill(liveStream_viewer_data.daemon_process_pid, SIGUSR2);
+    }
+
+    if (close(liveStream_viewer_data.pid_file_descriptor) == -1) {
+        syslog(log_facility | LOG_ERR, "Error: could not close the PID file.");
+    }
+
+    if (unlink(liveStream_viewer_data.my_pid_file_name) == -1) {
+        syslog(log_facility | LOG_ERR, "Error: Could not unlink PID file %s : %m", liveStream_viewer_data.my_pid_file_name);
+        syslog(log_facility | LOG_WARNING, "System Admin please take a look at this.");
+    } else {
+        syslog(log_facility | LOG_NOTICE, "Removed the PID file successfully.");
+    }
+
+    syslog(log_facility | LOG_NOTICE, "The LiveStream Viewer is turning off.");
+
+    exit(exit_code);
+}
+
+
+void camera_daemon_starts_up(int)
+{
+    syslog(log_facility | LOG_NOTICE, "camera_daemon_starts_up()");
+    int daemon_pid = get_daemon_pid();
+    liveStream_viewer_data.daemon_process_pid = (daemon_pid != -1) ? daemon_pid : 0;
+    // The SmartCCTV camera daemon already knows that the LiveStream Viewer process is up and running.
+
+    // Check the LiveStream Viewer can:
+    // - get the daemon's PID to send it signals
+    // - find the camera directory to open images
+    liveStream_viewer_data.SmartCCTV_daemon_is_running = liveStream_viewer_data.daemon_process_pid && find_camera_directory();
+    liveStream_window_ptr->set_streamDir(liveStream_viewer_data.streamDir);
+}
+
+
+void camera_daemon_shuts_down(int)
+{
+    syslog(log_facility | LOG_NOTICE, "camera_daemon_shuts_down()");
+    liveStream_viewer_data.SmartCCTV_daemon_is_running = false;
 }
 
 

@@ -4,7 +4,7 @@
  * Created On:  3/03/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/02/20
+ * Modified On:  5/17/20
  *
  * Description:
  * This function contains the definition of the camera_deamon() function,
@@ -27,9 +27,79 @@
 
 using std::vector;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+
 
 extern Daemon_data daemon_data;
 extern vector<Camera*> cameras;
+
+
+void camera_daemon()
+{
+    syslog(log_facility | LOG_NOTICE, "The camera daemon has started running.");
+
+    syslog(log_facility | LOG_NOTICE, "enable human detection: %d", daemon_data.enable_human_detection);
+    syslog(log_facility | LOG_NOTICE, "enable motion detection: %d", daemon_data.enable_motion_detection);
+    syslog(log_facility | LOG_NOTICE, "enable outlines: %d", daemon_data.enable_outlines);
+
+    daemon_data.is_live_stream_running = check_live_stream();
+    syslog(log_facility | LOG_NOTICE, "daemon_data.is_live_stream_running = %d", daemon_data.is_live_stream_running);
+    syslog(log_facility | LOG_NOTICE, "daemon_data.live_stream_viewer_pid = %d", daemon_data.live_stream_viewer_pid);
+
+    // This sets up the signal handler for when the LiveStream Viewer starts up.
+    struct sigaction action2;
+    action2.sa_handler = livestream_viewer_starts_up;
+    sigemptyset(&action2.sa_mask);
+    sigaddset(&action2.sa_mask, SIGTSTP);
+    sigaddset(&action2.sa_mask, SIGHUP);
+    sigaddset(&action2.sa_mask, SIGUSR1);
+    sigaddset(&action2.sa_mask, SIGUSR2);
+    sigaddset(&action2.sa_mask, SIGCONT);
+    sigaddset(&action2.sa_mask, SIGCHLD);
+    action2.sa_flags = 0;
+    sigaction(SIGUSR1, &action2, nullptr);
+
+    // This sets up the signal handler for when the LiveStream Viewer shuts down.
+    struct sigaction action3;
+    action3.sa_handler = livestream_viewer_shuts_down;
+    sigemptyset(&action3.sa_mask);
+    sigaddset(&action3.sa_mask, SIGTSTP);
+    sigaddset(&action3.sa_mask, SIGHUP);
+    sigaddset(&action3.sa_mask, SIGUSR1);
+    sigaddset(&action3.sa_mask, SIGUSR2);
+    sigaddset(&action3.sa_mask, SIGCONT);
+    sigaddset(&action3.sa_mask, SIGCHLD);
+    action3.sa_flags = 0;
+    sigaction(SIGUSR2, &action3, nullptr);
+
+    Camera cam(1);
+    cameras.push_back(&cam);
+    // The LiveStream process recieves SIGUSR1 when the daemon starts up.
+    if (daemon_data.live_stream_viewer_pid) {
+        kill(daemon_data.live_stream_viewer_pid, SIGUSR1);
+    }
+    cam.record();
+	
+    syslog(log_facility | LOG_NOTICE, "The camera daemon has completed running.");
+
+    terminate_daemon(0);
+}
+
+
+void livestream_viewer_starts_up(int)
+{
+    syslog(log_facility | LOG_NOTICE, "livestream_viewer_starts_up()");
+    daemon_data.is_live_stream_running = check_live_stream();
+}
+
+
+void livestream_viewer_shuts_down(int)
+{
+    syslog(log_facility | LOG_NOTICE, "livestream_viewer_shuts_down()");
+    daemon_data.is_live_stream_running = false;
+}
+
 
 bool check_live_stream()
 {
@@ -104,69 +174,5 @@ bool check_live_stream()
 }
 
 
-void livestream_viewer_starts_up(int)
-{
-    syslog(log_facility | LOG_NOTICE, "livestream_viewer_starts_up()");
-    daemon_data.is_live_stream_running = check_live_stream();
-}
-
-
-void livestream_viewer_shuts_down(int)
-{
-    syslog(log_facility | LOG_NOTICE, "livestream_viewer_shuts_down()");
-    daemon_data.is_live_stream_running = false;
-}
-
-
-void camera_daemon()
-{
-    syslog(log_facility | LOG_NOTICE, "The camera daemon has started running.");
-
-    syslog(log_facility | LOG_NOTICE, "enable human detection: %d", daemon_data.enable_human_detection);
-    syslog(log_facility | LOG_NOTICE, "enable motion detection: %d", daemon_data.enable_motion_detection);
-    syslog(log_facility | LOG_NOTICE, "enable outlines: %d", daemon_data.enable_outlines);
-
-    daemon_data.is_live_stream_running = check_live_stream();
-    syslog(log_facility | LOG_NOTICE, "daemon_data.is_live_stream_running = %d", daemon_data.is_live_stream_running);
-    syslog(log_facility | LOG_NOTICE, "daemon_data.live_stream_viewer_pid = %d", daemon_data.live_stream_viewer_pid);
-
-    // This sets up the signal handler for when the LiveStream Viewer starts up.
-    struct sigaction action2;
-    action2.sa_handler = livestream_viewer_starts_up;
-    sigemptyset(&action2.sa_mask);
-    sigaddset(&action2.sa_mask, SIGTSTP);
-    sigaddset(&action2.sa_mask, SIGHUP);
-    sigaddset(&action2.sa_mask, SIGUSR1);
-    sigaddset(&action2.sa_mask, SIGUSR2);
-    sigaddset(&action2.sa_mask, SIGCONT);
-    sigaddset(&action2.sa_mask, SIGCHLD);
-    action2.sa_flags = 0;
-    sigaction(SIGUSR1, &action2, nullptr);
-
-    // This sets up the signal handler for when the LiveStream Viewer shuts down.
-    struct sigaction action3;
-    action3.sa_handler = livestream_viewer_shuts_down;
-    sigemptyset(&action3.sa_mask);
-    sigaddset(&action3.sa_mask, SIGTSTP);
-    sigaddset(&action3.sa_mask, SIGHUP);
-    sigaddset(&action3.sa_mask, SIGUSR1);
-    sigaddset(&action3.sa_mask, SIGUSR2);
-    sigaddset(&action3.sa_mask, SIGCONT);
-    sigaddset(&action3.sa_mask, SIGCHLD);
-    action3.sa_flags = 0;
-    sigaction(SIGUSR2, &action3, nullptr);
-
-    Camera cam(1);
-    cameras.push_back(&cam);
-    // The LiveStream process recieves SIGUSR1 when the daemon starts up.
-    if (daemon_data.live_stream_viewer_pid) {
-        kill(daemon_data.live_stream_viewer_pid, SIGUSR1);
-    }
-    cam.record();
-	
-    syslog(log_facility | LOG_NOTICE, "The camera daemon has completed running.");
-
-    terminate_daemon(0);
-}
-
+#pragma GCC diagnostic pop
 

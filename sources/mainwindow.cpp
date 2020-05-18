@@ -4,7 +4,7 @@
  * Created On:  
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/16/20
+ * Modified On:  5/17/20
  *
  * Description:
  * This file contains code that runs in the GUI process when the user clicks

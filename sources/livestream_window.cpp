@@ -1,3 +1,17 @@
+/**
+ * File Name:   livestream_window.cpp
+ * Created By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
+ * Created On:  5/17/20
+ *
+ * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
+ * Modified On:  5/17/20
+ *
+ * Description:
+ * This file contains the implementation of the LiveStream_window class's methods.
+ * An instance of this class represents a single viewer window that is responsible for displaying the
+ * live stream from a single camera.
+ */
+
 #include "livestream_window.h"
 #include "write_message.h"
 
@@ -38,38 +52,11 @@ LiveStream_window::LiveStream_window(const string& streamDir, const string& defa
         exit_code = EXIT_FAILURE;
         terminate_livestream(0);
     }
-
-    // create a randerer, which sets up the graphics hardware
-    //Uint32 rander_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
-    //renderer = SDL_CreateRenderer(win
 }
 
 
 void LiveStream_window::open()
 {
-    // If the LiveStream Viewer is started up, and the SmartCCTV Daemon is not yet running
-    // (the camera directory doesn't exist), it will go to sleep until when the SmartCCTV Daemon starts up,
-    // it sends the LiveStream Viewer a signal, which wakes it up and it continues on down.
-    // This is to prevent busy waiting antipattern.
-    // is_camera_daemon_running is a const reference to liveStream_viewer_data.SmartCCTV_daemon_is_running
-    /*
-    while (!is_camera_daemon_running) {
-        pause();
-    }
-
-    while (true) {
-        if (is_camera_daemon_running) {
-            syslog(log_facility | LOG_NOTICE, "inotify is working");
-        } else {
-            syslog(log_facility | LOG_NOTICE, "camera daemon not on");
-        }
-        sleep(5);
-    }
-    */
-
-    int window_width = 0, window_height = 0;
-
-
     string not_running = default_images_directory + "not_running.bmp";
     string no_signal   = default_images_directory + "no_signal.bmp";
 
@@ -85,7 +72,13 @@ void LiveStream_window::open()
         // pause();  // prevents the window from appearing
     }
 
+    // If the camera daemon is not running, the above code will continue to sit the while loop until
+    // the camera daemon finally starts up, and sends a singal to this LiveStream Viewer process.
+    // Then the variable is_camera_daemon_running is set to true and streamDir becomes set to the directory
+    // that should be watched for camera images.
+
     // Get rid of any residue or glichy images.
+    // Sometimes there may be left images from the last run in the directory that were not removed.
     if (auto dir = opendir(streamDir.c_str())) {
         while (auto f = readdir(dir)) {
             if (!f->d_name || f->d_name[0] == '.') {
@@ -121,6 +114,9 @@ void LiveStream_window::open()
     while (true)
     {
         i = 0;
+        // read() blocks if there is no more data to read.
+        // This is the reason why the LiveStream Viewer window is blocking and it appears unresponsive
+        // if the camera daemon is not adding new image files to the directory of if it is not running at all.
         int total_read = read(inotify_fd, buffer, BUFFER_LEN);
         if (total_read < 0) {
             // this could be due to interrupted system call
@@ -152,6 +148,7 @@ void LiveStream_window::open()
                     image_file += event->name;
                     //syslog(log_facility | LOG_NOTICE, "file %s appeared", event->name);
                     draw_image(image_file);
+                    // delete the image file from the directory as soon as it is displayed to the screen
                     if (unlink(image_file.c_str()) == -1) {
                         const char* const error_message = strerror(errno);
                         syslog(log_facility | LOG_ERR, "Error cannot delete %s : %s", image_file.c_str(), error_message);
@@ -166,13 +163,6 @@ void LiveStream_window::open()
         process_events();
     }
 
-
-    /*
-    window = SDL_CreateWindow("SmartCCTV LiveStream Viewer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, 0);
-    if (window == nullptr) {
-        syslog(log_facility | LOG_ERR, "Error creating window: %s", SDL_GetError());
-    }
-    */
 }
 
 
@@ -216,6 +206,7 @@ void LiveStream_window::draw_image(const string& image_name)
         surface = nullptr;
     }
 
+    // while (true) is needed because it might fail to open the image file the first time
     while (true) {
         surface = IMG_Load(image_name.c_str());
         if (surface != nullptr)  // success
@@ -243,7 +234,7 @@ void LiveStream_window::draw_image(const string& image_name)
     if (!window_initialized) {
         window = SDL_CreateWindow("SmartCCTV LiveStream Viewer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, 0);
         if (window == nullptr) {
-            syslog(log_facility | LOG_ERR, "Error creating window: %s", SDL_GetError());
+            syslog(log_facility | LOG_CRIT, "Error creating window: %s", SDL_GetError());
             exit_code = EXIT_FAILURE;
             terminate_livestream(0);
         }
@@ -251,7 +242,7 @@ void LiveStream_window::draw_image(const string& image_name)
         Uint32 render_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
         renderer = SDL_CreateRenderer(window, -1, render_flags);
         if (renderer == nullptr) {
-            syslog(log_facility | LOG_ERR, "Error creating renderer: %s", SDL_GetError());
+            syslog(log_facility | LOG_CRIT, "Error creating renderer: %s", SDL_GetError());
             exit_code = EXIT_FAILURE;
             terminate_livestream(0);
         }
@@ -269,7 +260,7 @@ void LiveStream_window::draw_image(const string& image_name)
     SDL_FreeSurface(surface);
     surface = nullptr;
     if (texture == nullptr) {
-        syslog(log_facility | LOG_ERR, "Error creating texture: %s", SDL_GetError());
+        syslog(log_facility | LOG_CRIT, "Error creating texture: %s", SDL_GetError());
         exit_code = EXIT_FAILURE;
         terminate_livestream(0);
     }

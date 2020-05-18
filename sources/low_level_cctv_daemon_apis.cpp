@@ -4,7 +4,7 @@
  * Created On:  2/27/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/16/20
+ * Modified On:  5/17/20
  *
  * Description:
  * This file contains definitions of functions of the SmartCCTV Daemon's internal API.
