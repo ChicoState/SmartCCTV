@@ -88,7 +88,7 @@ There are two steps, first to initalize the Makefile and then use the bootstrap 
 to swap out the nessecary lines into the Makefile.
 
 ```
-./scripts/bootstrap.sh
+source ./scripts/bootstrap.sh
 make
 ```
 
