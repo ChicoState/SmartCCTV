@@ -259,14 +259,12 @@ void MainWindow::on_pushButton_clicked()
 //    qDebug() << ui->dateEdit->date().addDays(-1).toString("ddMMyyyy");
     int position = ui->horizontalSlider->value();
     qDebug() << position;
-    QString arg;
+    QString command = "Rscript document.R ";
     for(int i = position; i >= 0; i--){
-        arg.append(ui->dateEdit->date().addDays(-i).toString("dd.MM.yyyy") + ".out ");
+        command.append(ui->dateEdit->date().addDays(-i).toString("dd.MM.yyyy") + ".out ");
     }
-    string utf8_text = arg.toUtf8().constData();
-    qDebug() << arg;
-    cout << utf8_text;
-
+    qDebug() << command;
+    std::system(qPrintable(command));
     QString imgPath = home_directory;
     imgPath.append("/Desktop/SmartCCTV/Charts/activity-plot.pdf");
 
