@@ -26,13 +26,13 @@ bool HumanFilter::runRecognition(cv::Mat &frame)
 	boxes.clear();
 	//The third value is used to set detection threshold (higher = less false positives, more false negatives)
 	//Recommended value between 1.3 and 1.7
-	syslog(log_facility | LOG_NOTICE, "Searching for humans...");
+	//syslog(log_facility | LOG_NOTICE, "Searching for humans...");
 
 	hog.detectMultiScale(frame, boxes, 1.7, cv::Size(8,8), cv::Size(), 1.05, 2, false);
 	
 	if(boxes.size() < 1)
 	{
-		syslog(log_facility | LOG_NOTICE, "didn't find humans");
+		//syslog(log_facility | LOG_NOTICE, "didn't find humans");
 
 		return false;
 	}

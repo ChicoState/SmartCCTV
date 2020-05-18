@@ -31,3 +31,7 @@ replace "$old_ui_mainwindow" "$new_ui_mainwindow" -- Makefile
 rm Makefile_qmake
 # Now you just have the system dependent Makefile
 # and the Makefile_skeleton is unchanged
+
+# Copy the default images.
+mkdir $HOME/SmartCCTV_recordings/default_images
+cp default_images/*.bmp $HOME/SmartCCTV_recordings/default_images

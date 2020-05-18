@@ -286,7 +286,7 @@ void Camera::record()
     	    terminate_daemon(0);
 		}
 		
-		syslog(log_facility | LOG_NOTICE, "Running Human Recognition.");
+		//syslog(log_facility | LOG_NOTICE, "Running Human Recognition.");
 		bool humanFound = humanFilter.runRecognition(frame);
 		//bool faceFound = faceFilter.runRecognition(frame);
 		//bool motionDetected = motionFilter.runDetection(frame);
@@ -300,9 +300,9 @@ void Camera::record()
 				break;
 		}
 		
-		if(true) //Placeholder- replace with if(daemon_data.is_livestreaming) or equivalent
+		if(daemon_data.is_live_stream_running)
 		{
-			syslog(log_facility | LOG_NOTICE, "Saving frame to livestream dir");
+			//syslog(log_facility | LOG_NOTICE, "Saving frame to livestream dir");
 			saveToStream(frame, x);
 		}
 		
@@ -313,13 +313,13 @@ void Camera::record()
 				//std::cout << "DETECTION EVENT!!!" << std::endl;
 				recordingStartTime = std::chrono::high_resolution_clock::now();
 				recording = true;
-				syslog(log_facility | LOG_NOTICE, "Human found!!!");
+				//syslog(log_facility | LOG_NOTICE, "Human found!!!");
 
 			}
 		}
 		else
 		{
-				syslog(log_facility | LOG_NOTICE, "Human not found...");
+				//syslog(log_facility | LOG_NOTICE, "Human not found...");
 		}
 		
 		if(recording)

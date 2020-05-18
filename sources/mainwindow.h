@@ -4,7 +4,7 @@
  * Created On:  
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/03/20
+ * Modified On:  5/16/20
  *
  * Description:
  * This file contains the definition the MainWindow class.
@@ -15,6 +15,7 @@
 #define MAINWINDOW_H
 
 #include "high_level_cctv_daemon_apis.h"
+#include "livestream_facade.h"
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -43,6 +44,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     Daemon_facade daemon_facade;
+    LiveStream_facade liveStream_facade;
     const char* home_directory;
 };
 

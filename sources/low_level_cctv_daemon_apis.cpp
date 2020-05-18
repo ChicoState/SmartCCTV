@@ -20,7 +20,7 @@
 #include <sys/stat.h>   /* for umask(), mode permissions constants */
 #include <fcntl.h>      /* for O_* constants, open() */
 #include <unistd.h>     /* for close(), unlink(), fork(), setsid(), sysconf(), chdir(), getpid() */
-#include <signal.h>     /* for sigemptyset(), signal constants */
+#include <signal.h>     /* for sigemptyset(), kill(), signal constants */
 #include <errno.h>      /* for errno */
 #include <syslog.h>     /* for openlog(), syslog(), closelog() */
 #include <cstdlib>      /* for exit(), atexit(), EXIT_SUCCESS, EXIT_FAILURE */
@@ -52,6 +52,7 @@ volatile Daemon_data daemon_data = {
     .enable_motion_detection = true,               // whether to enable motion detection
     .enable_outlines = true,                       // whether to draw outlines
     .is_live_stream_running = false,               // is live stream viewer process currently running
+    .live_stream_viewer_pid = 0,                   // The PID of the LiveStreamViewer
     .daemon_exit_status = EXIT_SUCCESS  // The exit status of the daemon, to use in terminate_daemon(), assumed EXIT_SUCCESS.
 };
 
@@ -167,6 +168,12 @@ void terminate_daemon(int)
 {
     for (Camera* camera : cameras) {
         camera->finalize();
+    }
+
+    // The LiveStream process recieves SIGUSR2 when the daemon shuts down.
+    if (daemon_data.live_stream_viewer_pid) {
+        syslog(log_facility | LOG_WARNING, "sending signal to %d", daemon_data.live_stream_viewer_pid);
+        kill(daemon_data.live_stream_viewer_pid, SIGUSR2);
     }
 
     if (close(daemon_data.pid_file_descriptor) == -1) {

@@ -40,6 +40,7 @@ QLabel* daemon_label = nullptr;
 QCheckBox* checkBox_1 = nullptr;
 QCheckBox* checkBox_2 = nullptr;
 QCheckBox* checkBox_3 = nullptr;
+Daemon_facade* daemon_facade_ptr = nullptr;
 
 
 void close_message_handler()
@@ -61,11 +62,11 @@ void read_message(int)
 
     // read a message
     int err;
-    char message[121];
-    memset(message, 0, 121);  // zero out the buffer
+    char message[151];
+    memset(message, 0, 151);  // zero out the buffer
     // This is a while loop to handle when there are multiple messages queued up,
     // waiting to be read.
-    while ( (err = mq_receive(message_handler, message, 120, nullptr)) != -1) {
+    while ( (err = mq_receive(message_handler, message, 150, nullptr)) != -1) {
         syslog(log_facility | LOG_NOTICE, "%s", message);
         // set the message into the label.
         if (message_label != nullptr) {
@@ -73,6 +74,16 @@ void read_message(int)
         }
 
         if (strcmp("SmartCCTV encountered an error.", message) == 0) {
+            if (daemon_label != nullptr) {
+                daemon_label->setText("SmartCCTV have stopped running.");
+            }
+            //outline checkbox
+            checkBox_1->setEnabled(true);
+            //human detection checkbox
+            checkBox_2->setEnabled(true);
+            //motion detection checkbox
+            checkBox_3->setEnabled(true);
+        } else if (strcmp("SmartCCTV unexpected failure.", message) == 0) {
             if (daemon_label != nullptr) {
                 daemon_label->setText("SmartCCTV have stopped running.");
             }
@@ -102,9 +113,37 @@ void read_message(int)
             checkBox_2->setEnabled(true);
             //motion detection checkbox
             checkBox_3->setEnabled(true);
+        } else if (strcmp("LiveStream Viewer unexpected failure.", message) == 0) {
+            if (daemon_label != nullptr) {
+                daemon_label->setText("LiveStream Viewer have stopped running.");
+            }
+        } else if (strcmp("Can't open LiveStream Viewer: SmartCCTV has been tampered.", message) == 0) {
+            if (daemon_facade_ptr != nullptr) {
+                bool daemon = daemon_facade_ptr->kill_daemon();
+                if(daemon == false){
+                    if (daemon_label != nullptr) {
+                        daemon_label->setText("SmartCCTV is currently not running.");
+                    }
+                } else {
+                    if (daemon_label != nullptr) {
+                        daemon_label->setText("SmartCCTV have stopped running.");
+                    }
+                }
+
+                //outline checkbox
+                checkBox_1->setEnabled(true);
+                //human detection checkbox
+                checkBox_2->setEnabled(true);
+                //motion detection checkbox
+                checkBox_3->setEnabled(true);
+            }
+        } else if (strcmp("LiveStream Viewer window was closed.", message) == 0) {
+            if (daemon_label != nullptr) {
+                daemon_label->setText("LiveStream Viewer have stopped running.");
+            }
         }
 
-        memset(message, 0, 121);  // zero out the buffer
+        memset(message, 0, 151);  // zero out the buffer
     }
 }
 
@@ -161,6 +200,9 @@ MainWindow::MainWindow(QWidget *parent)
     checkBox_1 = ui->checkBox;
     checkBox_2 = ui->checkBox_2;
     checkBox_3 = ui->checkBox_3;
+
+    // Set the daemon_facade_ptr.
+    daemon_facade_ptr = &daemon_facade;
 
     // Setup the message handler to recieve error messages from the daemon and dispaly them onto the GUI.
     // Make sure we can handle the SIGCONT message when the message queue notification sens the signal.
@@ -300,7 +342,15 @@ void MainWindow::on_horizontalSlider_sliderMoved(int position)
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    syslog(log_facility | LOG_NOTICE, "The live stream viewer was started.");
-    ui->label_3->setText("label_3 is used for printing diagnostic messages from the daemon");
+    int livestream = liveStream_facade.run_livestream_viewer(home_directory);
+    if(livestream == 0){
+        ui->daemon_label->setText("LiveStream Viewer is now running.");
+    }
+    else if(livestream == 1){
+        ui->daemon_label->setText("LiveStream Viewer is already running.");
+    }
+    else if(livestream == 2){
+        ui->daemon_label->setText("Can not run LiveStream Viewer due to permission error.");
+    }
 }
 

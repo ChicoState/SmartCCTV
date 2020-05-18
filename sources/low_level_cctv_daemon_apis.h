@@ -34,6 +34,7 @@ struct Daemon_data {
     bool enable_motion_detection;  // whether to enable motion detection
     bool enable_outlines;          // whether to draw outlines
     bool is_live_stream_running;   // is live stream viewer process currently running
+    int live_stream_viewer_pid;    // The PID of the LiveStreamViewer
     int daemon_exit_status;        // The exit status of the daemon, to use in terminate_daemon(), assumed EXIT_SUCCESS.
 };
 

@@ -48,8 +48,10 @@ LFLAGS        = -Wl,-O1
 # When you run qmake it will generate a Makefile. Copy and paste the LIBS from that, replacing this line.
 LIBS          = $(SUBLIBS) -L/usr/X11R6/lib64 -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread
 
-ALL_LIBS      = $(LIBS) -lpthread -lrt `pkg-config opencv --cflags --libs`
+SDL_INCLUDE   = `sdl2-config --cflags`
+SDL_LIBS      = `sdl2-config --libs` -lSDL2_image
 
+ALL_LIBS      = $(LIBS) -lpthread -lrt `pkg-config opencv --cflags --libs` $(SDL_LIBS)
 
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -88,7 +90,9 @@ SOURCES       = $(SOURCES_DIR)/camera_daemon.cpp \
 		$(SOURCES_DIR)/mainwindow.cpp moc_mainwindow.cpp \
 		$(SOURCES_DIR)/humanFilter.cpp \
 		$(SOURCES_DIR)/motionFilter.cpp \
-		$(SOURCES_DIR)/camera.cpp
+		$(SOURCES_DIR)/camera.cpp \
+        $(SOURCES_DIR)/livestream_facade.cpp \
+        $(SOURCES_DIR)/livestream_window.cpp
 OBJECTS       = $(OBJECTS_DIR)/camera_daemon.o \
 		$(OBJECTS_DIR)/high_level_cctv_daemon_apis.o \
 		$(OBJECTS_DIR)/low_level_cctv_daemon_apis.o \
@@ -98,7 +102,9 @@ OBJECTS       = $(OBJECTS_DIR)/camera_daemon.o \
 		$(OBJECTS_DIR)/moc_mainwindow.o \
 		$(OBJECTS_DIR)/humanFilter.o \
 		$(OBJECTS_DIR)/motionFilter.o \
-		$(OBJECTS_DIR)/camera.o
+		$(OBJECTS_DIR)/camera.o \
+        $(OBJECTS_DIR)/livestream_facade.o \
+        $(OBJECTS_DIR)/livestream_window.o
 
 TARGET        = $(OBJECTS_DIR)/SmartCCTV_UI
 
@@ -202,6 +208,11 @@ $(OBJECTS_DIR)/motionFilter.o: $(SOURCES_DIR)/motionFilter.cpp $(SOURCES_DIR)/mo
 $(OBJECTS_DIR)/humanFilter.o: $(SOURCES_DIR)/humanFilter.cpp $(SOURCES_DIR)/humanFilter.hpp
 	$(CXX) -c $(CXXFLAGS) -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ -o $@ $(SOURCES_DIR)/humanFilter.cpp
 
+$(OBJECTS_DIR)/livestream_facade.o: $(SOURCES_DIR)/livestream_facade.cpp $(SOURCES_DIR)/livestream_facade.h
+	$(CXX) -c $(CXXFLAGS) $(SDL_INCLUDE) $(INCPATH) -o $@ $(SOURCES_DIR)/livestream_facade.cpp
+
+$(OBJECTS_DIR)/livestream_window.o: $(SOURCES_DIR)/livestream_window.cpp $(SOURCES_DIR)/livestream_window.h
+	$(CXX) -c $(CXXFLAGS) $(SDL_INCLUDE) $(INCPATH) -o $@ $(SOURCES_DIR)/livestream_window.cpp
 
 clean:
 	rm $(QT_METACODE) $(OBJECTS) $(TARGET)
