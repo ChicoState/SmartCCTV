@@ -1,10 +1,10 @@
 /**
  * File Name:  camera.cpp
- * Created By:  Svyatoslav Chukhlebov <slavikchukhlebov@mail.csuchico.edu>
+ * Created By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
  * Created On:  4/25/20
  *
- * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/16/20
+ * Modified By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
+ * Modified On:  5/18/20
  *
  * Description:
  * This class is used to run image recogntition on a Mat object, searching for humans in the frame.
@@ -24,7 +24,6 @@
 
 using std::string;
 using std::to_string;
-
 
 extern Daemon_data daemon_data;
 
@@ -161,7 +160,6 @@ Camera::Camera(std::string readFilePath)
 void Camera::clearExpiredFrames()
 {
 	auto now = std::chrono::high_resolution_clock::now();
-	int x = 0;
 	for(size_t i = 0; i < frameBackCapture.size(); i++)
 	{
 		auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - frameBackCapture[i].start);
@@ -170,16 +168,11 @@ void Camera::clearExpiredFrames()
 			//std::cout << "Cleared an expired frame" << std::endl;
 			frameBackCapture.erase(frameBackCapture.begin() + i);
 			i--;
-			x++;
 		}
 		else
 		{
-			break;
+			return;
 		}
-	}
-	if(x > 0)
-	{
-		//std::cout << "Cleared " << x << " expired frames. Buffer at " << frameBackCapture.size() << std::endl;
 	}
 }
 
@@ -187,7 +180,6 @@ void Camera::clearExpiredFrames()
 void Camera::saveToStream(cv::Mat frame, int x)
 {
 	std::string imageFileName = streamDir + std::to_string(x) + ".bmp";
-	//std::cout << "Saving frame to stream as " << imageFileName << std::endl;
 	imwrite(imageFileName, frame);
 }
 
@@ -195,10 +187,9 @@ void Camera::saveToStream(cv::Mat frame, int x)
 void Camera::saveFrameToBuffer(cv::Mat frame)
 {
 	frameContainer container;
-	container.frame = frame;
+	container.frame = frame.clone();
 	container.start = std::chrono::high_resolution_clock::now();
 	frameBackCapture.push_back(container);
-	//std::cout << "Saving frame to buffer. Buffer at " << frameBackCapture.size() << std::endl;
 }
 
 
@@ -207,11 +198,9 @@ void Camera::saveVideo()
 	if(frameBackCapture.size() < 1)
 	{
 		//Trying to write an empty video, this is an error state
-
         string message = "SmartCCTV: something has gone wrong with saving the video.";
         write_message(message);
 
-		//std::cout << "Error: Attempted to save empty video" << std::endl;
 		syslog(log_facility | LOG_ERR, "Error: Attempting to save empty video");
         return;
 	}
@@ -231,7 +220,6 @@ void Camera::saveVideo()
 	}
 	
 	syslog(log_facility | LOG_NOTICE, "Saved a video %s", fullVideoString.c_str());
-	//std::cout << "Saved " << fullVideoString << std::endl;
 	frameBackCapture.clear();
 }
 
@@ -280,7 +268,6 @@ void Camera::record()
             write_message(message);
 
 			syslog(log_facility | LOG_ERR, "Error: Corrupt frame on camera %d", cameraID);
-			//std::cout << "Error: Corrupt frame on camera " << cameraID << std::endl;
 
 			daemon_data.daemon_exit_status = EXIT_FAILURE;
     	    terminate_daemon(0);
@@ -314,12 +301,7 @@ void Camera::record()
 				recordingStartTime = std::chrono::high_resolution_clock::now();
 				recording = true;
 				//syslog(log_facility | LOG_NOTICE, "Human found!!!");
-
 			}
-		}
-		else
-		{
-				//syslog(log_facility | LOG_NOTICE, "Human not found...");
 		}
 		
 		if(recording)
@@ -330,10 +312,8 @@ void Camera::record()
 		saveFrameToBuffer(frame);
 		x++;
 		//syslog(log_facility | LOG_NOTICE, "Through the loop...");
-
 	}
 	
 	cap.release();
-	cv::destroyAllWindows();
 }
 

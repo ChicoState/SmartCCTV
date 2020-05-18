@@ -34,6 +34,7 @@ using std::vector;
 extern Daemon_data daemon_data;
 extern vector<Camera*> cameras;
 
+const int cameraNumber = 0;
 
 void camera_daemon()
 {
@@ -73,7 +74,7 @@ void camera_daemon()
     action3.sa_flags = 0;
     sigaction(SIGUSR2, &action3, nullptr);
 
-    Camera cam(1);
+    Camera cam(cameraNumber);
     cameras.push_back(&cam);
     // The LiveStream process recieves SIGUSR1 when the daemon starts up.
     if (daemon_data.live_stream_viewer_pid) {
