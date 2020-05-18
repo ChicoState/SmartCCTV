@@ -1,11 +1,15 @@
+
 # Smart CCTV Team Project <br> [![Build Status](https://travis-ci.org/ChicoState/SmartCCTV.svg?branch=master)](https://travis-ci.org/ChicoState/SmartCCTV.svg?branch=master)  [![Coverage Status](https://coveralls.io/repos/github/ChicoState/SmartCCTV/badge.svg?branch=master)](https://coveralls.io/github/ChicoState/SmartCCTV?branch=master)
 </br>
 
 ## Team Product Description: 
 Our product will be a replacement for traditional CCTV software that uses image comparison to help save space and money for a company. It will be a smart move for any company that would be interested in potentially using the software for analytics, as it will label objects on the images it receives and log each event with the objects identified, potentially saving the consumer thousands.
-<br><img src="https://cdn.discordapp.com/attachments/692488145379262505/711008139864178789/unknown.png"
-     alt="Product Demo"
-     width="350" height="350" />
+<br><img src="https://i.imgur.com/YaPYtXW.png"
+     alt="Product Demonstration of human tracking"
+     width="450" height="350" /> <img src="https://i.imgur.com/E63OZOZ.png"
+     alt="Product Demonstration of UI and live viewer"
+     width="450" height="350" />
+
 ## Installing ##
 ### Prerequisites
 
