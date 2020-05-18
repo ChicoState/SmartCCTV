@@ -5,7 +5,7 @@
  # Description:
  # The purpose of this is to compare 'N' amount of 24-hour periods, which is extracted from the
  # logfiles designated in command line call as arguements. The format will allow for 'N'
- # amount of data sets. However, it should be noted that 'N' shall not exceed ~5, given that any
+ # amount of data sets. However, it should be noted that 'N' shall not exceed 7, given that any
  # more than that would simply convolute the graph further, making it unreadable.
 
 # Import libraries
@@ -29,7 +29,8 @@ getInput <- function(times, input) {
         # Check for event type (See example line(s) provided for sample)
         if (str_detect(cLine, "camera\\[[0-9]{1,}\\]:\ [:print:]{0,}Motion")) {
             # Insert converted data into our vector and increment the counter
-            cTime <- strsplit(cList[[1]][5], ":") 
+            # (Seconds) + (Minutes * 1/60) + (Hours * 1/3600)
+            cTime <- strsplit(cList[[1]][3], ":") 
             data[count] <- (
                 (as.numeric(cTime[[1]][1])) + 
                 (as.numeric(cTime[[1]][2]) * 1/60) + 
@@ -45,8 +46,8 @@ getInput <- function(times, input) {
 # Set the arguement to trailing only and perform 
 # a security check on arguements length
 args = commandArgs(trailingOnly = TRUE)
-if (length(args) < 1 || length(args) > 10) {
-    stop("ERROR: Invalid number of arguements, please try specifying input files")
+if (length(args) < 1 || length(args) > 7) {
+    stop("ERROR: Invalid number of arguements, please verify your input")
 }
 
 # Process the arguements into function calls of getInput()
