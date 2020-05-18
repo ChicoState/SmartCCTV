@@ -1,4 +1,4 @@
-# Smart CCTV Team Project <br> [![Build Status](https://travis-ci.org/ChicoState/SmartCCTV.svg?branch=master)](https://travis-ci.org/ChicoState/SmartCCTV.svg?branch=master)
+# Smart CCTV Team Project <br> [![Build Status](https://travis-ci.org/ChicoState/SmartCCTV.svg?branch=master)](https://travis-ci.org/ChicoState/SmartCCTV.svg?branch=master)  [![Coverage Status](https://coveralls.io/repos/github/ChicoState/SmartCCTV/badge.svg?branch=master)](https://coveralls.io/github/ChicoState/SmartCCTV?branch=master)
 </br>
 
 ## Team Product Description: 
