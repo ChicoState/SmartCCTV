@@ -50,13 +50,24 @@ For our review process, we decided it'd be best to rely on our SCRUM meetings, a
 \\
 While not perfect as of yet, our TravisCI is serving as an important reminder to us as to what issues the end-user could face as they install the product. 
 \\
-\\It's an especially important part that we've considered along the way, but haven't been able to make much headway with because of a ~10-minute build time. The biggest issue is that the two core components, QT and OpenCV, are relatively large and take an excessively long time to get onto TravisCI, which makes testing almost infeasible.
+\\It's an especially important part that we've considered along the way, but haven't been able to make much headway with because of a ~30-minute build time. The biggest issue is that the two core components, QT and OpenCV, are relatively large and take an excessively long time to get onto TravisCI, which makes testing almost infeasible.
 \\
 \\
 \\\includegraphics[scale=0.5]{https://prdeving.files.wordpress.com/2017/03/google-c-testing-framework-gtesk-300x200.jpg?w=300}
 \\Although we haven't had the chance to implement this feature yet, we've discussed plans on how we'd roll out the testing framework for our project as we have done in class assignments. 
 \\
-\\We'd initially start with making sure that the camera class is covered before moving onto the daemon that runs everything, as it'd probably easier to make sure that it generates output correctly.
+\\We'd initially start with making sure that the 'daemon' (which runs the OpenCV code in the background) is functional, and move onto other parts such as the UI that runs that deamon.
+\pagebreak
+\\\subsection*{Planned Testing}
+\\Apart from compiling, our coverage was \textbf{planned} to consist of basic tests such as,
+\\\begin{itemize}
+  \\\item Did the OpenCv and Qt install \textbf{correctly} from a clean OS?
+  \\\item Did the UI correctly kill/start the processes it interacts with?
+  \\\item Was the program able to access the camera, even if it was a psuedo-camera displayed only for the test?
+  \\\item Was there any permission errors with accessing any logging features or misc. issues?
+  \\\item If there was an error generated from any particular part of the program, did it kill the process correctly?
+  \\\item Was there any issue with generating scripts (from example output) with the R program? 
+\end{itemize}
 \pagebreak
 
 \section*{Coverage}
@@ -69,13 +80,7 @@ That's to say nothing of the fact that a large portion of our code is run as bac
     \caption{Real build-time exceedes 30 minutes}
 \end{figure}
 \\
-\\Apart from compiling, our coverage mainly was planned to consist of basic tests such as,
-\begin{itemize}
-  \item Did the OpenCv and Qt install correctly from a clean OS?
-  \item Did the UI correctly kill/start the processes it interacts with?
-  \item Was the program able to access the camera, even if it was a psuedo-camera displayed only for the test?
-  \item Was there any permission errors with accessing any logging features or misc. issues?
-\end{itemize}
+\\After discussing it, we've come to know that in fact almost no OpenCV projects have coverage for similar reasons. While there might be software to emulate a camera for TravisCI to use for this kind of program, the question of how compatabile the software and our program would be made it seem like a potential waste of time.
 \pagebreak
 
 
