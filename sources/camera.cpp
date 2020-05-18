@@ -260,6 +260,7 @@ void Camera::record()
 		}
 		
 		cap >> frame;
+		
 		if(frame.empty())
 		{
             string message = "SmartCCTV encountered an error.";
@@ -271,21 +272,18 @@ void Camera::record()
     	    terminate_daemon(0);
 		}
 		
-		//syslog(log_facility | LOG_NOTICE, "Running Human Recognition.");
-		bool motionDetected = false;//motionFilter.runDetection(frame.clone());
-		bool humanFound = humanFilter.runRecognition(frame);
-		bool faceFound = faceFilter.runRecognition(frame);
-		
-		if(daemon_data.enable_outlines)
+		//syslog(log_facility | LOG_NOTICE, "Running Recognition and Detection.");
+		bool motionDetected = true;
+		bool humanFound = true;
+		bool faceFound = true;
+		if(daemon_data.enable_human_detection)
 		{
-			if(motionDetected)
-			{
-				putText(frame, "+", cv::Point(12, 24), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(0,0,255),2);
-			}
-			else
-			{
-				putText(frame, "-", cv::Point(12, 24), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(0,0,255),2);
-			}
+			humanFound = humanFilter.runRecognition(frame);
+			faceFound = faceFilter.runRecognition(frame);
+		}
+		if(daemon_data.enable_motion_detection)
+		{
+			motionDetected = motionFilter.runDetection(frame);
 		}
 		
 		if(daemon_data.is_live_stream_running)
@@ -293,7 +291,7 @@ void Camera::record()
 			//syslog(log_facility | LOG_NOTICE, "Saving frame to livestream dir");
 			saveToStream(frame, x);
 		}
-		
+		 
 		if((humanFound || faceFound) && motionDetected)
 		{
 			if(!recording)

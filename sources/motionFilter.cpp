@@ -23,7 +23,7 @@ extern Daemon_data daemon_data;
 
 MotionFilter::MotionFilter()
 {
-	//No initialization currently necessary.
+	initialized = false;
 }
 
 //Prepares the frame for motion detection analysis
@@ -59,23 +59,48 @@ bool MotionFilter::differentFrames(cv::Mat oldFrame, cv::Mat newFrame)
 	return false;
 }
 
-bool MotionFilter::runDetection(cv::Mat newFrame)
+std::string MotionFilter::putFrameInfo(cv::Mat frame, std::string outPut)
 {
+	outPut.append(std::to_string(frame.rows));
+	outPut.append(" ");
+	outPut.append(std::to_string(frame.cols));
+	outPut.append(" ");
+	outPut.append(std::to_string(frame.depth()));
+	outPut.append(" ");
+	outPut.append(std::to_string(frame.channels()));
+	outPut.append(" ");
+	outPut.append(std::to_string(frame.type()));
+	return outPut;
+}
+
+bool MotionFilter::runDetection(cv::Mat &frame)
+{
+	cv::Mat newFrame = frame.clone();
+	convertFrame(newFrame);
 	//Algorithm skips the first frame
 	if(!initialized)
 	{
 		oldFrame = newFrame;
-		convertFrame(oldFrame);
 		initialized = true;
 		return false;
 	}
 	
-	convertFrame(newFrame);
+	//putText(frame, putFrameInfo(frame, "Rcv Frame: "), cv::Point(10, 20), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(0,0,255),2);
+	//putText(frame, putFrameInfo(newFrame, "New Frame: "), cv::Point(10, 40), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(0,0,255),2);
+	//putText(frame, putFrameInfo(oldFrame, "Old Frame: "), cv::Point(10, 60), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(0,0,255),2);
 	if(differentFrames(oldFrame, newFrame))
 	{
-		oldFrame = newFrame.clone();
+		oldFrame = newFrame;
+		if(daemon_data.enable_outlines)
+		{
+			putText(frame, "+", cv::Point(12, 24), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(0,0,255),2);
+		}
 		return true;
 	}
 	oldFrame = newFrame;
+	if(daemon_data.enable_outlines)
+	{
+		putText(frame, "-", cv::Point(12, 24), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(0,0,255),2);
+	}
 	return false;
 }

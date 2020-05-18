@@ -4,7 +4,7 @@
  * Created On:  5/17/20
  *
  * Modified By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
- * Modified On:  5/17/20
+ * Modified On:  5/18/20
  *
  * Description:
  * This class is used to run motion detection on a Mat object, searching for differences between consecutive frames. 
@@ -26,8 +26,9 @@ private:
 	bool initialized;
 	void convertFrame(cv::Mat &frame);
 	bool differentFrames(cv::Mat oldFrame, cv::Mat newFrame);
+	std::string putFrameInfo(cv::Mat frame, std::string outPut);
 public:
 	MotionFilter();
-	bool runDetection(cv::Mat frame);
+	bool runDetection(cv::Mat &frame);
 };
 #endif
