@@ -30,8 +30,8 @@ MAKEFILE      = Makefile
 CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED
-CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES) -g
-CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES) -std=c++17 -g
+CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES) -g 
+CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES) -std=c++17 -lstdc++fs -g
 
 # FIXME
 # This is the path to the #includes header files of Qt.
@@ -89,6 +89,7 @@ SOURCES       = $(SOURCES_DIR)/camera_daemon.cpp \
 		$(SOURCES_DIR)/main.cpp \
 		$(SOURCES_DIR)/mainwindow.cpp moc_mainwindow.cpp \
 		$(SOURCES_DIR)/humanFilter.cpp \
+		$(SOURCES_DIR)/faceFilter.cpp \
 		$(SOURCES_DIR)/motionFilter.cpp \
 		$(SOURCES_DIR)/camera.cpp \
         $(SOURCES_DIR)/livestream_facade.cpp \
@@ -101,6 +102,7 @@ OBJECTS       = $(OBJECTS_DIR)/camera_daemon.o \
 		$(OBJECTS_DIR)/mainwindow.o \
 		$(OBJECTS_DIR)/moc_mainwindow.o \
 		$(OBJECTS_DIR)/humanFilter.o \
+		$(OBJECTS_DIR)/faceFilter.o \
 		$(OBJECTS_DIR)/motionFilter.o \
 		$(OBJECTS_DIR)/camera.o \
         $(OBJECTS_DIR)/livestream_facade.o \
@@ -198,6 +200,8 @@ $(OBJECTS_DIR)/camera_daemon.o: $(SOURCES_DIR)/camera_daemon.cpp $(SOURCES_DIR)/
 
 $(OBJECTS_DIR)/camera.o: $(SOURCES_DIR)/camera.cpp $(SOURCES_DIR)/camera.hpp \
 		$(SOURCES_DIR)/humanFilter.hpp \
+		$(SOURCES_DIR)/faceFilter.hpp \
+		$(SOURCES_DIR)/motionFilter.hpp \
 		$(SOURCES_DIR)/low_level_cctv_daemon_apis.h \
 		$(SOURCES_DIR)/write_message.h
 	$(CXX) -c $(CXXFLAGS) -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ -o $@ $(SOURCES_DIR)/camera.cpp
@@ -207,6 +211,9 @@ $(OBJECTS_DIR)/motionFilter.o: $(SOURCES_DIR)/motionFilter.cpp $(SOURCES_DIR)/mo
 
 $(OBJECTS_DIR)/humanFilter.o: $(SOURCES_DIR)/humanFilter.cpp $(SOURCES_DIR)/humanFilter.hpp
 	$(CXX) -c $(CXXFLAGS) -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ -o $@ $(SOURCES_DIR)/humanFilter.cpp
+	
+$(OBJECTS_DIR)/faceFilter.o: $(SOURCES_DIR)/faceFilter.cpp $(SOURCES_DIR)/faceFilter.hpp
+	$(CXX) -c $(CXXFLAGS) -ggdb `pkg-config --cflags --libs opencv` -static-libstdc++ -o $@ $(SOURCES_DIR)/faceFilter.cpp
 
 $(OBJECTS_DIR)/livestream_facade.o: $(SOURCES_DIR)/livestream_facade.cpp $(SOURCES_DIR)/livestream_facade.h
 	$(CXX) -c $(CXXFLAGS) $(SDL_INCLUDE) $(INCPATH) -o $@ $(SOURCES_DIR)/livestream_facade.cpp

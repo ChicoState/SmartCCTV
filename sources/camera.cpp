@@ -165,7 +165,6 @@ void Camera::clearExpiredFrames()
 		auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - frameBackCapture[i].start);
 		if(duration.count() > 10)
 		{
-			//std::cout << "Cleared an expired frame" << std::endl;
 			frameBackCapture.erase(frameBackCapture.begin() + i);
 			i--;
 		}
@@ -230,7 +229,6 @@ void Camera::checkRecordingLength()
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - recordingStartTime);
 	if(duration.count() > 15)
 	{
-		//std::cout << "Max recording length reached. Saving video." << std::endl;
 		recording = false;
 		saveVideo();
 	}
@@ -274,17 +272,20 @@ void Camera::record()
 		}
 		
 		//syslog(log_facility | LOG_NOTICE, "Running Human Recognition.");
+		bool motionDetected = false;//motionFilter.runDetection(frame.clone());
 		bool humanFound = humanFilter.runRecognition(frame);
-		//bool faceFound = faceFilter.runRecognition(frame);
-		//bool motionDetected = motionFilter.runDetection(frame);
+		bool faceFound = faceFilter.runRecognition(frame);
 		
-		//Enabling debug will let you view the output live
-		if(debug)
+		if(daemon_data.enable_outlines)
 		{
-			cv::imshow("SmartCCTV Camera " + std::to_string(cameraID), frame);
-			char c=(char)cv::waitKey(25);
-			if(c==27)
-				break;
+			if(motionDetected)
+			{
+				putText(frame, "+", cv::Point(12, 24), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(0,0,255),2);
+			}
+			else
+			{
+				putText(frame, "-", cv::Point(12, 24), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(0,0,255),2);
+			}
 		}
 		
 		if(daemon_data.is_live_stream_running)
@@ -293,11 +294,11 @@ void Camera::record()
 			saveToStream(frame, x);
 		}
 		
-		if(humanFound) //Placeholder- replace with if((humanFound || faceFound) && motionDetected && (!recording))
+		if((humanFound || faceFound) && motionDetected)
 		{
 			if(!recording)
 			{
-				//std::cout << "DETECTION EVENT!!!" << std::endl;
+				//DETECTION EVENT!!!
 				recordingStartTime = std::chrono::high_resolution_clock::now();
 				recording = true;
 				//syslog(log_facility | LOG_NOTICE, "Human found!!!");

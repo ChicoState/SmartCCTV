@@ -1,18 +1,18 @@
 /**
- * File Name:  humanFilter.hpp
+ * File Name:  faceFilter.hpp
  * Created By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
- * Created On:  4/25/20
- *
- * Modified By:  Svyatoslav Chukhlebov <shukhlebov@mail.csuchico.edu>
- * Modified On:  4/29/20
+ * Created On:  5/15/20
+ *s
+ * Modified By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
+ * Modified On:  5/17/20
  *
  * Description:
- * This class is used to run image recogntition on a Mat object, searching for humans in the frame.
+ * This class is used to run image recogntition on a Mat object, searching for faces in the frame.
  * Each instance of this class is to correspond to a single camera or video file.
  */
 
-#ifndef HUMANFILTER_HPP
-#define HUMANFILTER_HPP
+#ifndef FACEFILTER_HPP
+#define FACEFILTER_HPP
 
 #include <opencv2/objdetect.hpp>
 #include <opencv2/highgui.hpp>
@@ -22,14 +22,14 @@
 #include <vector>
 #include <iomanip>
 
-class HumanFilter
+class FaceFilter
 {
 public:
-	HumanFilter();
+	FaceFilter();
 	bool runRecognition(cv::Mat &frame);
     
 private:
-	cv::HOGDescriptor hog;
+	cv::CascadeClassifier cascade;
 	std::vector<cv::Rect> boxes;
 };
 #endif

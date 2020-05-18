@@ -1,19 +1,22 @@
 /**
  * File Name:  humanFilter.cpp
- * Created By:  Svyatoslav Chukhlebov <slavikchukhlebov@mail.csuchico.edu>
+ * Created By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
  * Created On:  4/25/20
  *
- * Modified By:  Svyatoslav Chukhlebov <slavikchukhlebov@mail.csuchico.edu>
- * Modified On:  4/29/20
+ * Modified By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
+ * Modified On:  5/18/20
  *
  * Description:
  * This class is used to run image recogntition on a Mat object, searching for humans in the frame.
  * Each instance of this class is to correspond to a single camera or video file.
  */
 
+#include "low_level_cctv_daemon_apis.h"
 #include "humanFilter.hpp"
 #include <syslog.h>  /* for syslog() */
 #define log_facility LOG_LOCAL0
+
+extern Daemon_data daemon_data;
 
 HumanFilter::HumanFilter()
 {
@@ -33,7 +36,6 @@ bool HumanFilter::runRecognition(cv::Mat &frame)
 	if(boxes.size() < 1)
 	{
 		//syslog(log_facility | LOG_NOTICE, "didn't find humans");
-
 		return false;
 	}
 	
@@ -46,7 +48,7 @@ bool HumanFilter::runRecognition(cv::Mat &frame)
         rect.y += cvRound(rect.height*0.07);
         rect.height = cvRound(rect.height*0.8);
         
-        if(true) //placeholder- replace with if(daemon_data.enable_boxes) once daemon_data API is ready
+        if(daemon_data.enable_outlines)
         {
 			rectangle(frame, rect.tl(), rect.br(), cv::Scalar(0, 255, 0), 2);
 		}

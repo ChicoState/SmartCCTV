@@ -1,9 +1,9 @@
 /**
  * File Name:  camera.hpp
- * Created By:  Svyatoslav Chukhlebov <slavikchukhlebov@mail.csuchico.edu>
+ * Created By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
  * Created On:  4/25/20
  *
- * Modified By:  Svyatoslav Chukhlebov <slavikchukhlebov@mail.csuchico.edu>
+ * Modified By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
  * Modified On:  4/29/20
  *
  * Description:
@@ -18,8 +18,8 @@
 #include <chrono>
 #include <syslog.h>  /* for syslog() */
 #include "humanFilter.hpp"
-//#include "faceFilter.hpp"
-//#include "motionFilter.hpp"
+#include "faceFilter.hpp"
+#include "motionFilter.hpp"
 #define log_facility LOG_LOCAL0
 
 //using namespace std;
@@ -54,8 +54,8 @@ class Camera
 	void saveVideo();
 	void checkRecordingLength();
 	HumanFilter humanFilter;
-	//FaceFilter faceFilter;
-	//MotionFilter motionFilter;
+	FaceFilter faceFilter;
+	MotionFilter motionFilter;
 	const bool debug = false;
 };
 #endif

@@ -1,37 +1,33 @@
 /**
- * File Name:  MotionFilter.hpp
- * Created By:  Slavik Chukhlebov <schukhlebov@mail.csuchico.edu>
- * Created On:  2/29/2020
+ * File Name:  motionFilter.hpp
+ * Created By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
+ * Created On:  5/17/20
  *
- * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/03/2020
+ * Modified By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
+ * Modified On:  5/17/20
  *
  * Description:
- *.Used for motion detection algorithms.
+ * This class is used to run motion detection on a Mat object, searching for differences between consecutive frames. 
+ * Each instance of this class is to correspond to a single camera or video file.
  */
+
 #ifndef MOTIONFILTER_HPP
 #define MOTIONFILTER_HPP
 
-#include <opencv2/core/types.hpp>        /* for cv::Rect */
-#include <opencv2/tracking/tracker.hpp>  /* for cv::Tracker */
-#include <opencv2/core/mat.hpp>          /* for cv::Mat */
-
-using cv::Rect;
-using cv::Tracker;
-using cv::Mat;
-
+#include <opencv2/opencv.hpp>
+#include <opencv2/tracking.hpp>
+#include <opencv2/core/ocl.hpp>
+#include <unistd.h>
 
 class MotionFilter
 {
-public:
-   MotionFilter();
-   // DO NOT use new keyword in C++ as a variable name!
-   Rect detect(Mat old_one, Mat new_one);
 private:
-   //Tracker tracker;
-   Mat newFrame, oldFrame;
-
+	cv::Mat oldFrame;
+	bool initialized;
+	void convertFrame(cv::Mat &frame);
+	bool differentFrames(cv::Mat oldFrame, cv::Mat newFrame);
+public:
+	MotionFilter();
+	bool runDetection(cv::Mat frame);
 };
-
-#endif  /* MOTIONFILTER_HPP */
-
+#endif
