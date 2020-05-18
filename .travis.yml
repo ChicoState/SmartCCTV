@@ -1,55 +1,49 @@
 os: linux
 dist: xenial
+language: cpp
 
-matrix:
-  include:
-    - language: cpp
-      
-      # Refresh
-      before_install:
-        - sudo apt-get update
+# CRAN package dependencies
+r_packages: 
+  - ggplot2
+  - tidyr
+  - dplyr
+  - stringr
+  - Hmisc
 
-      # Install Qt5 and OpenCV
-      install:
-        - sudo apt-get install -y build-essential
-        
-        # QT5
-        - sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
-        - sudo apt-get update -qq
-        - sudo apt-get install qtbase5-dev qtdeclarative5-dev libqt5webkit5-dev libsqlite3-dev
-        - sudo apt-get install qt5-default qttools5-dev-tools
-        
-        # OpenCV
-        - sudo apt-get install -y cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
-        - sudo apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
-        - curl -sL https://github.com/Itseez/opencv/archive/3.4.zip > opencv.zip
-        - unzip opencv.zip
-        - cd opencv-3.4
-        - mkdir build
-        - cd build
-        - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF -D BUILD_EXAMPLES=OFF -D WITH_QT=ON -D WITH_OPENGL=ON ..
-        - make -j4
-        - sudo make install
-        - sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
-        - sudo ldconfig
-        - cd ../../
+# Define R version
+r: release
 
-      script:
-        - qmake SmartCCTV_UI.pro
-        - ./scripts/bootstrap.sh
-        - mkdir build
-        - make
+# Refresh
+before_install:
+  - sudo apt-get update
 
-      - language: r
+# Install Qt5 and OpenCV
+install:
+  - sudo apt-get install -y build-essential
+  
+  # QT5
+  - sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
+  - sudo apt-get update -qq
+  - sudo apt-get install qtbase5-dev qtdeclarative5-dev libqt5webkit5-dev libsqlite3-dev
+  - sudo apt-get install qt5-default qttools5-dev-tools
+  
+  # OpenCV
+  - sudo apt-get install -y cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+  - sudo apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+  - curl -sL https://github.com/Itseez/opencv/archive/3.4.zip > opencv.zip
+  - unzip opencv.zip
+  - cd opencv-3.4
+  - mkdir build
+  - cd build
+  - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF -D BUILD_EXAMPLES=OFF -D WITH_QT=ON -D WITH_OPENGL=ON ..
+  - make -j4
+  - sudo make install
+  - sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
+  - sudo ldconfig
+  - cd ../../
 
-        # CRAN package dependencies
-        r_packages: 
-          - ggplot2
-          - tidyr
-          - dplyr
-          - stringr
-          - Hmisc
-
-        # Define R version
-        r:
-          - release
+script:
+  - qmake SmartCCTV_UI.pro
+  - ./scripts/bootstrap.sh
+  - mkdir build
+  - make
