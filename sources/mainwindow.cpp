@@ -253,11 +253,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
+//Display Chart
 void MainWindow::on_pushButton_clicked()
 {
-//    QString imgPath = home_directory;
-//    imgPath.append("/Desktop/SmartCCTV/Charts/" + ui->dateEdit->date().toString("ddMMyyyy") + ".png");
 //    qDebug() << ui->dateEdit->date().addDays(-1).toString("ddMMyyyy");
     int position = ui->horizontalSlider->value();
     qDebug() << position;
@@ -268,8 +266,12 @@ void MainWindow::on_pushButton_clicked()
     string utf8_text = arg.toUtf8().constData();
     qDebug() << arg;
     cout << utf8_text;
-//    QPixmap img(imgPath);
-//    ui->label->setPixmap(img.scaled(ui->label->width(),ui->label->height(),Qt::KeepAspectRatio));
+
+    QString imgPath = home_directory;
+    imgPath.append("/Desktop/SmartCCTV/Charts/activity-plot.pdf");
+
+    QPixmap img(imgPath);
+    ui->statChartLabel->setPixmap(img.scaled(ui->statChartLabel->width(),ui->statChartLabel->height(),Qt::KeepAspectRatio));
 }
 
 

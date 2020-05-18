@@ -54,7 +54,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <property name="sizePolicy">
@@ -234,7 +234,7 @@
      <attribute name="title">
       <string>Statistics</string>
      </attribute>
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="statChartLabel">
       <property name="geometry">
        <rect>
         <x>19</x>
