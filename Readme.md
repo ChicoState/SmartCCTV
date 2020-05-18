@@ -4,11 +4,12 @@
 
 ## Team Product Description: 
 Our product will be a replacement for traditional CCTV software that uses image comparison to help save space and money for a company. It will be a smart move for any company that would be interested in potentially using the software for analytics, as it will label objects on the images it receives and log each event with the objects identified, potentially saving the consumer thousands.
-<br><img src="https://i.imgur.com/YaPYtXW.png"
+<br><br>
+<img src="https://i.imgur.com/YaPYtXW.png"
      alt="Product Demonstration of human tracking"
-     width="450" height="350" /> <img src="https://i.imgur.com/E63OZOZ.png"
+     width="350" height="250" /> <img src="https://i.imgur.com/E63OZOZ.png"
      alt="Product Demonstration of UI and live viewer"
-     width="450" height="350" />
+     width="350" height="250" />
 
 ## Installing ##
 ### Prerequisites
@@ -22,9 +23,6 @@ libwebp-devel libjpeg-turbo-devel libtiff-devel libdc1394-devel tbb-devel
 numpy eigen3-devel gstreamer-plugins-base-devel freeglut-devel mesa-libGL 
 mesa-libGL-devel boost boost-thread boost-devel libv4l-devel
 
-Default installation instructions:
-https://www.learnopencv.com/install-opencv3-on-ubuntu/
-
 Test your installation by compiling and running an OpenCV sample:
 cd /path/to/opencv/samples/cpp/
 pkg-config --cflags --libs opencv
@@ -36,10 +34,8 @@ sudo sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf'
 sudo ldconfig
 ``` 
 
-QT (Version 5.14.1)
+QT (Version 5.3.1 )
 ```
-Based on Qt 5.14.1 (GCC 5.3.1 20160406 (Red Hat 5.3.1-6), 64 bit)
-https://download.qt.io/official_releases/qt/5.14/5.14.1/
 qt5-qmake
 libqt5-dev
 ```
@@ -79,7 +75,7 @@ gcc-fortran (gcc-fortran-multilib-x32, gcc-fortran-git, gcc-fortran-multilib-git
 tk (tk85) (make)
 ```
 
-`remove` command (used in `bootstrap.sh`)
+Bootstrap
 ```
 mysql-server-5.7
 ```
