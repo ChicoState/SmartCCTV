@@ -280,10 +280,13 @@ void MainWindow::on_pushButton_Run_clicked()
         message_label->setText("");
     }
 
+    //This returns the value of the selected camera.
+    int cameraNumber = ui->cameraSpinBox->value();
+
     //This will return boolean value which option is selected.
     bool outline = ui->checkBox->isChecked();
-    bool human_det = ui->checkBox->isChecked();
-    bool motion_det = ui->checkBox->isChecked();
+    bool human_det = ui->checkBox_2->isChecked();
+    bool motion_det = ui->checkBox_3->isChecked();
 
     int daemon = daemon_facade.run_daemon(human_det, motion_det, outline);
     if(daemon == 0){
