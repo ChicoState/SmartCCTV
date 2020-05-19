@@ -1,6 +1,6 @@
 os: linux
 dist: xenial
-language: cpp
+language: r
 
 # CRAN package dependencies
 r_packages: 
