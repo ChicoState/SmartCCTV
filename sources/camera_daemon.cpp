@@ -4,7 +4,7 @@
  * Created On:  3/03/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/17/20
+ * Modified On:  5/18/20
  *
  * Description:
  * This function contains the definition of the camera_deamon() function,
@@ -34,8 +34,6 @@ using std::vector;
 extern Daemon_data daemon_data;
 extern vector<Camera*> cameras;
 
-const int cameraNumber = 0;
-
 void camera_daemon()
 {
     syslog(log_facility | LOG_NOTICE, "The camera daemon has started running.");
@@ -45,8 +43,8 @@ void camera_daemon()
     syslog(log_facility | LOG_NOTICE, "enable outlines: %d", daemon_data.enable_outlines);
 
     daemon_data.is_live_stream_running = check_live_stream();
-    syslog(log_facility | LOG_NOTICE, "daemon_data.is_live_stream_running = %d", daemon_data.is_live_stream_running);
-    syslog(log_facility | LOG_NOTICE, "daemon_data.live_stream_viewer_pid = %d", daemon_data.live_stream_viewer_pid);
+    //syslog(log_facility | LOG_NOTICE, "daemon_data.is_live_stream_running = %d", daemon_data.is_live_stream_running);
+    //syslog(log_facility | LOG_NOTICE, "daemon_data.live_stream_viewer_pid = %d", daemon_data.live_stream_viewer_pid);
 
     // This sets up the signal handler for when the LiveStream Viewer starts up.
     struct sigaction action2;
@@ -74,7 +72,9 @@ void camera_daemon()
     action3.sa_flags = 0;
     sigaction(SIGUSR2, &action3, nullptr);
 
-    Camera cam(cameraNumber);
+    syslog(log_facility | LOG_NOTICE, "The camera%d is being used.", daemon_data.cameraNumber);
+
+    Camera cam(daemon_data.cameraNumber);
     cameras.push_back(&cam);
     // The LiveStream process recieves SIGUSR1 when the daemon starts up.
     if (daemon_data.live_stream_viewer_pid) {

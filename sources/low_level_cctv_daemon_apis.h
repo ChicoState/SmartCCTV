@@ -4,7 +4,7 @@
  * Created On:  2/27/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/16/20
+ * Modified On:  5/18/20
  *
  * Description:
  * This file contains declarations of functions of the SmartCCTV Daemon's internal API.
@@ -35,6 +35,7 @@ struct Daemon_data {
     bool enable_outlines;          // whether to draw outlines
     bool is_live_stream_running;   // is live stream viewer process currently running
     int live_stream_viewer_pid;    // The PID of the LiveStreamViewer
+    int cameraNumber;              // An integer identifying which camera to use
     int daemon_exit_status;        // The exit status of the daemon, to use in terminate_daemon(), assumed EXIT_SUCCESS.
 };
 

@@ -4,7 +4,7 @@
  * Created On:  
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/17/20
+ * Modified On:  5/18/20
  *
  * Description:
  * This file contains code that runs in the GUI process when the user clicks
@@ -141,6 +141,16 @@ void read_message(int)
             if (daemon_label != nullptr) {
                 daemon_label->setText("LiveStream Viewer have stopped running.");
             }
+        } else if (strcmp("Cannot find project configuration files.", message) == 0) {
+            if (daemon_label != nullptr) {
+                daemon_label->setText("SmartCCTV have stopped running.");
+            }
+            //outline checkbox
+            checkBox_1->setEnabled(true);
+            //human detection checkbox
+            checkBox_2->setEnabled(true);
+            //motion detection checkbox
+            checkBox_3->setEnabled(true);
         }
 
         memset(message, 0, 151);  // zero out the buffer
@@ -281,14 +291,14 @@ void MainWindow::on_pushButton_Run_clicked()
     }
 
     //This returns the value of the selected camera.
-    int cameraNumber = ui->cameraSpinBox->value();
+    int cameraNumber = ui->cameraSpinBox->value() - 1;
 
     //This will return boolean value which option is selected.
     bool outline = ui->checkBox->isChecked();
     bool human_det = ui->checkBox_2->isChecked();
     bool motion_det = ui->checkBox_3->isChecked();
 
-    int daemon = daemon_facade.run_daemon(human_det, motion_det, outline);
+    int daemon = daemon_facade.run_daemon(human_det, motion_det, outline, cameraNumber);
     if(daemon == 0){
         ui->daemon_label->setText("SmartCCTV is now running.");
         //outline checkbox

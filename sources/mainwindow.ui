@@ -149,7 +149,7 @@
        <number>0</number>
       </property>
       <property name="text">
-       <string>SCREEN FOR LIVE VIEW OF CAMERA</string>
+       <string>SmartCCTV Info</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>

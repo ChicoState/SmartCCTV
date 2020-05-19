@@ -4,7 +4,7 @@
  * Created On:  4/11/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/16/20
+ * Modified On:  5/18/20
  *
  * Description:
  * This file contains definitions of functions of the SmartCCTV Daemon's external API.
@@ -38,16 +38,13 @@ void Daemon_facade::set_daemon_info(const char* home_directory)
 }
 
 
-int Daemon_facade::run_daemon(bool enable_human_detection, bool enable_motion_detection, bool enable_outlines)
+int Daemon_facade::run_daemon(bool enable_human_detection, bool enable_motion_detection, bool enable_outlines, int cameraNumber)
 {
     // User has requested to start the SmartCCTV daemon.
     daemon_data.enable_human_detection = enable_human_detection;
     daemon_data.enable_motion_detection = enable_motion_detection;
     daemon_data.enable_outlines = enable_outlines;
-    syslog(log_facility | LOG_NOTICE, "enable human detection: %d", daemon_data.enable_human_detection);
-    syslog(log_facility | LOG_NOTICE, "enable motion detection: %d", daemon_data.enable_motion_detection);
-    syslog(log_facility | LOG_NOTICE, "enable outlines: %d", daemon_data.enable_outlines);
-
+    daemon_data.cameraNumber = cameraNumber;
 
     enum return_states { SUCCESS, DAEMON_ALREADY_RUNNING, PERMISSIONS_ERROR };
 

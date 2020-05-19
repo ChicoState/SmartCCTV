@@ -4,7 +4,7 @@
  * Created On:  5/16/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/17/20
+ * Modified On:  5/18/20
  *
  * Description:
  * This file contains the definitions of member methods LiveStream_facade, as well as it's helper functions.
@@ -56,8 +56,8 @@ struct LiveStream_viewer_data {
     bool SmartCCTV_daemon_is_running;  // Is the daemon proces running or not?
 } liveStream_viewer_data = {
     // Set the default values for the data members.
-    .streamDir = "/tmp/SmartCCTV_livestream/",  // The parent directory into which live stream images are saved.
-    .default_images_dir = "$HOME/SmartCCTV_recordings/default_images",  // The directory where default images are stored.
+    .streamDir = "/tmp/SmartCCTV_livestream/",         // The parent directory into which live stream images are saved.
+    .default_images_dir = "SmartCCTV/default_images",  // The directory where default images are stored.
     .my_pid_file_name = "/tmp/LiveStream_viewer_pid",  // The path to the LiveStream Viewer process's PID file.
     .pid_file_descriptor = 0,                          // A descriptor to this file.
     .pid_file_pointer = nullptr,                       // A pointer to this file.
@@ -76,10 +76,19 @@ LiveStream_facade::LiveStream_facade()
 
 int LiveStream_facade::run_livestream_viewer(const string& home_directory)
 {
-    liveStream_viewer_data.default_images_dir = home_directory;
-    liveStream_viewer_data.default_images_dir += "/SmartCCTV_recordings/default_images/";
-
     enum return_states { SUCCESS, ALREADY_RUNNING, PERMISSIONS_ERROR };
+
+    const char* SmartCCTV_Project_dir = nullptr;
+    SmartCCTV_Project_dir = getenv("SmartCCTV_Project_dir");
+    if (SmartCCTV_Project_dir == nullptr) {
+        //Error state! Exit the livestream viewer
+        syslog(log_facility | LOG_ERR, "Error: $SmartCCTV_Project_dir environmental varaible not set : failed to identify project directory");
+        write_message("Cannot find project configuration files.");
+        return PERMISSIONS_ERROR;
+    }
+
+    liveStream_viewer_data.default_images_dir = SmartCCTV_Project_dir;
+    liveStream_viewer_data.default_images_dir += "/default_images/";
 
     if (is_livestream_running()) {
         syslog(log_facility | LOG_ERR, "Error: A LiveStream Viewer is already running with PID %d", my_pid);

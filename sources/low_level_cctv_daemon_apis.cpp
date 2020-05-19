@@ -4,7 +4,7 @@
  * Created On:  2/27/20
  *
  * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
- * Modified On:  5/17/20
+ * Modified On:  5/18/20
  *
  * Description:
  * This file contains definitions of functions of the SmartCCTV Daemon's internal API.
@@ -53,6 +53,7 @@ volatile Daemon_data daemon_data = {
     .enable_outlines = true,                       // whether to draw outlines
     .is_live_stream_running = false,               // is live stream viewer process currently running
     .live_stream_viewer_pid = 0,                   // The PID of the LiveStreamViewer
+    .cameraNumber = 0,                             // An integer identifying which camera to use
     .daemon_exit_status = EXIT_SUCCESS  // The exit status of the daemon, to use in terminate_daemon(), assumed EXIT_SUCCESS.
 };
 

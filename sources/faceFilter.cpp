@@ -3,7 +3,7 @@
  * Created By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
  * Created On:  5/15/20
  *
- * Modified By:  Svyatoslav Chukhlebov <schukhlebov@mail.csuchico.edu>
+ * Modified By:  Konstantin Rebrov <krebrov@mail.csuchico.edu>
  * Modified On:  5/18/20
  *
  * Description:
@@ -15,20 +15,38 @@
 #include "low_level_cctv_daemon_apis.h"
 #include "faceFilter.hpp"
 #include <syslog.h>  /* for syslog() */
+#include <cstdlib>   /* for getenv(), EXIT_FAILURE */
+#include <string>    /* for std::string */
+
+using std::string;
+
 #define log_facility LOG_LOCAL0
 
 extern Daemon_data daemon_data;
 
 FaceFilter::FaceFilter()
 {
-	//std::string fullPath = fs::current_path();
-	//fullPath.append("/cascade.xml");
+    const string error_message = "Cannot find cascade.xml for FaceFilter";
+
+    const char* SmartCCTV_Project_dir = nullptr;
+    SmartCCTV_Project_dir = getenv("SmartCCTV_Project_dir");
+    if (SmartCCTV_Project_dir == nullptr) {
+        //Error state! Exit the daemon
+        syslog(log_facility | LOG_ERR, "Error: $SmartCCTV_Project_dir environmental varaible not set : failed to identify project directory");
+        syslog(log_facility | LOG_CRIT, "%s", error_message.c_str());
+        write_message("Cannot find project configuration files.");
+        daemon_data.daemon_exit_status = EXIT_FAILURE;
+        terminate_daemon(0);
+    }
+    string fullPath = SmartCCTV_Project_dir;
+    fullPath.append("/cascade.xml");
 	
-	if (!cascade.load("/home/slavik/SmartCCTV3/SmartCCTV/cascade.xml"))
+	if (!cascade.load(fullPath))
     {
         //Error state! Exit the daemon
-        std::string message = "Cannot find cascade.xml for FaceFilter";
-        write_message(message);
+        syslog(log_facility | LOG_ERR, "Could not open %s", fullPath.c_str());
+        syslog(log_facility | LOG_CRIT, "%s", error_message.c_str());
+        write_message("Cannot find project configuration files.");
         daemon_data.daemon_exit_status = EXIT_FAILURE;
         terminate_daemon(0);
     }
