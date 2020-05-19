@@ -266,7 +266,7 @@ void MainWindow::on_pushButton_clicked()
     qDebug() << command;
     std::system(qPrintable(command));
     QString imgPath = home_directory;
-    imgPath.append("/Desktop/SmartCCTV/Charts/activity-plot.pdf");
+    imgPath.append("/Desktop/SmartCCTV/Charts/Overview.pdf");
 
     QPixmap img(imgPath);
     ui->statChartLabel->setPixmap(img.scaled(ui->statChartLabel->width(),ui->statChartLabel->height(),Qt::KeepAspectRatio));
