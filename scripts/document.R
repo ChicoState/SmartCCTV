@@ -57,7 +57,7 @@ for (i in 1:length(args)) {
 }
 
 # Start PDF/Plot generation
-pdf("activity-plot.pdf")
+pdf("Overview.pdf")
 
 # Set main dataframe
 df <- data.frame("Day.1"=sample(times[[1]], length(times[[1]]), replace = FALSE))

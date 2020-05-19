@@ -2,9 +2,22 @@ os: linux
 dist: xenial
 language: cpp
 
+# CRAN package dependencies
+r_packages: 
+  - ggplot2
+  - tidyr
+  - dplyr
+  - stringr
+  - Hmisc
+
+# Define R version
+r: release
+
+# Refresh
 before_install:
   - sudo apt-get update
-  
+
+# Install Qt5 and OpenCV
 install:
   - sudo apt-get install -y build-essential
   

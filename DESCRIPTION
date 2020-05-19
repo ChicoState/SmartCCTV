@@ -1,0 +1,17 @@
+Package: document.R
+Date: 2020-05-15
+Title: SmartCCTV
+Authors@R: c(
+    person("Connor", "A.", , "", role = c("aut","cre")),
+    person("Slavik", "C.", , "", role = c("aut","cre")),
+    person("Konstantin", "R.", , "", role = c("aut","cre")),
+    person("Wei", "T.", , "", role = c("aut","cre")),
+    )
+Depends: R (>= 3.1.3)
+Imports: rlang, stringr, ggplot2, tidyr, dplyr, Hmisc
+Description: See README.md
+VignetteBuilder: knitr
+License: GPL (>= 2)
+NeedsCompilation: no
+Author: Connor A
+Repository: CRAN

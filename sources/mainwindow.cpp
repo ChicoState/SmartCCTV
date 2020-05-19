@@ -263,23 +263,23 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
+//Display Chart
 void MainWindow::on_pushButton_clicked()
 {
-//    QString imgPath = home_directory;
-//    imgPath.append("/Desktop/SmartCCTV/Charts/" + ui->dateEdit->date().toString("ddMMyyyy") + ".png");
 //    qDebug() << ui->dateEdit->date().addDays(-1).toString("ddMMyyyy");
     int position = ui->horizontalSlider->value();
     qDebug() << position;
-    QString arg;
+    QString command = "Rscript document.R ";
     for(int i = position; i >= 0; i--){
-        arg.append(ui->dateEdit->date().addDays(-i).toString("dd.MM.yyyy") + ".out ");
+        command.append(ui->dateEdit->date().addDays(-i).toString("dd.MM.yyyy") + ".out ");
     }
-    string utf8_text = arg.toUtf8().constData();
-    qDebug() << arg;
-    cout << utf8_text;
-//    QPixmap img(imgPath);
-//    ui->label->setPixmap(img.scaled(ui->label->width(),ui->label->height(),Qt::KeepAspectRatio));
+    qDebug() << command;
+    std::system(qPrintable(command));
+    QString imgPath = home_directory;
+    imgPath.append("/Desktop/SmartCCTV/Charts/Overview.pdf");
+
+    QPixmap img(imgPath);
+    ui->statChartLabel->setPixmap(img.scaled(ui->statChartLabel->width(),ui->statChartLabel->height(),Qt::KeepAspectRatio));
 }
 
 
