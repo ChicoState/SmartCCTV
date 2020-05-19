@@ -60,28 +60,27 @@ While not perfect as of yet, our TravisCI is serving as an important reminder to
 \pagebreak
 
 \section*{Coverage}
-Unfortunately, due the \textbf{extreme} nature of our build requiring both Qt and OpenCV, we could not feasibly instantiate any form of code coverage/testing within reasonable limits.\\
-\\
-That's to say nothing of the fact that a \textbf{large portion of our code is run as background processes or as UI, meaning that we're unable to be actually test much of anything} bar killing the process by manually calling the API from the deamon.
+Unfortunately, due the extreme nature of our program's dependencies on both \textbf{Qt and OpenCV leading to an average of 30 minutes of build time}, we could not feasibly instantiate any form of code coverage/testing within reasonable limits.\\
 \\\begin{figure}[width=0.25\textwidth]
     \centering
     \includegraphics[scale=0.5]{https://i.imgur.com/UJPKVSY.png}
     \caption{Real build-time exceedes 30 minutes}
 \end{figure}
 \\
-\\After discussing it, we've come to know that in fact almost no OpenCV projects have coverage for similar reasons. While there might be software to emulate a camera for TravisCI to use for this kind of program, the question of how compatabile the software and our program would be made it seem like a potential waste of time.\\
+That's to say nothing of the fact that a \textbf{large portion of our code is run as background processes or as UI, meaning that we're unable to be actually test much of anything} bar killing the process by manually calling the API from the deamon.
+\\
+\\Not only that, but to fully test our program would \textbf{require a matrix for TravisCI across the two different languages (R/CPP)}, one of which is entirely community driven and prone to bugs. We've also found that vast majority of OpenCV project simply don't test or require builds because of the immense amount of resources and time required. However, we have designed a list that we planned to use for testing if we were able to get everything running.\\
 \pagebreak
 \\\subsection*{Planned Coverage}
 \\Apart from compiling, our coverage was \textbf{planned} to consist of basic tests such as,
 \\\begin{itemize}
-  \\\item Did the OpenCv and Qt install \textbf{correctly} from a clean OS?
+  \\\item Did the R, OpenCv, and Qt install \textbf{correctly} from a clean OS?
   \\\item Did the UI's api calls for the daemon correctly kill/start the processes it interacts with?
   \\\item Was the program able to access the camera, even if it was a psuedo-camera displayed only for the test?
-  \\\item Was there any permission errors with accessing any logging features or misc. issues?
+  \\\item Was the program able to access to generate an example output from a example logfile?
+  \\\item Was there any permission errors with accessing any system logging features or misc. issues?
   \\\item If there was an error generated from any particular part of the program, did it kill the process correctly?
-  \\\item Was there any issue with generating scripts (from example output) with the R program? 
+  \\\item Was there any issue with generating downloading dependencies? 
 \end{itemize}
 \pagebreak
-
-
 \end{document}
