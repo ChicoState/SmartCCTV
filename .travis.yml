@@ -36,7 +36,7 @@ install:
   - mkdir build
   - cd build
   - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF -D BUILD_EXAMPLES=OFF -D WITH_QT=ON -D WITH_OPENGL=ON ..
-  - make -j4
+  - make -j7
   - sudo make install
   - sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
   - sudo ldconfig
@@ -46,4 +46,3 @@ script:
   - qmake SmartCCTV_UI.pro
   - source ./scripts/bootstrap.sh
   - mkdir build
-  - make
