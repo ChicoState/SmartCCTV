@@ -43,8 +43,7 @@ install:
   - cd ../../
 
 script:
+  # Create the Makefile and correct it with bootstrap script
   - qmake SmartCCTV_UI.pro
   - source ./scripts/bootstrap.sh
   - mkdir build
-  - cmake .
-  - make
