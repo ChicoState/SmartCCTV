@@ -34,4 +34,4 @@ rm Makefile_qmake
 
 # Export the SmartCCTV Project Directory
 export SmartCCTV_Project_dir=`pwd`
-echo $SmartCCTV_Project_dir >> /etc/environment
+echo "SmartCCTV_Project_dir="$SmartCCTV_Project_dir >> /etc/environment
